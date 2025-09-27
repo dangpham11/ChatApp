@@ -10,12 +10,14 @@ namespace API.Entities;
 public class AppUser
 {
     public int Id { get; set; }
-    public string UserName { get; set; }
-    public byte[] PasswordHash { get; set; }
-    public byte[] PasswordSalt { get; set; }
+    public string UserName { get; set; } = null!;
+    public byte[] PasswordHash { get; set; } = null!;
+    public byte[] PasswordSalt { get; set; } = null!;
+    public string DisplayName { get; set; } = null!;
+    public string? AvatarUrl { get; set; } 
+    // ... các trường khác (email, password hash, ...)
+    public ICollection<Message> SentMessages { get; set; } = new List<Message>();
+    public ICollection<GroupMember> GroupMembers { get; set; } = new List<GroupMember>();
 
-    public ICollection<Post> Posts { get; set; }
-    public ICollection<GroupChatMember> GroupChatMembers { get; set; }
-    public ICollection<Notification> Notifications { get; set; }
 }
 

@@ -4,7 +4,6 @@ using API.Entities;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -34,6 +33,7 @@ public class AccountController : ControllerBase
         var user = new AppUser
         {
             UserName = dto.Username.ToLower(),
+            DisplayName = dto.Username, // có thể gán mặc định bằng Username
             PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dto.Password)),
             PasswordSalt = hmac.Key
         };
@@ -43,7 +43,10 @@ public class AccountController : ControllerBase
 
         return new UserDto
         {
+            Id = user.Id,
             Username = user.UserName,
+            DisplayName = user.DisplayName,
+            AvatarUrl = user.AvatarUrl,
             Token = _tokenService.CreateToken(user)
         };
     }
@@ -51,7 +54,8 @@ public class AccountController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(UserLoginDto dto)
     {
-        var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == dto.Username.ToLower());
+        var user = await _context.Users
+            .SingleOrDefaultAsync(x => x.UserName == dto.Username.ToLower());
 
         if (user == null) return Unauthorized("Invalid username");
 
@@ -67,7 +71,10 @@ public class AccountController : ControllerBase
 
         return new UserDto
         {
+            Id = user.Id,
             Username = user.UserName,
+            DisplayName = user.DisplayName,
+            AvatarUrl = user.AvatarUrl,
             Token = _tokenService.CreateToken(user)
         };
     }

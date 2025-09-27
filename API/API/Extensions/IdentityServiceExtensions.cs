@@ -10,7 +10,7 @@ public static class IdentityServiceExtensions
 {
     public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
     {
-        var key = Encoding.UTF8.GetBytes(config["TokenKey"]);
+        var key = Encoding.UTF8.GetBytes(config["TokenKey"] ?? "DefaultKey");
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(opt =>
