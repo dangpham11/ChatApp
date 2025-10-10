@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20251010090332_AddMessageEditHistory")]
+    partial class AddMessageEditHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,12 +100,6 @@ namespace API.Data.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
-                    b.Property<double?>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("float");
-
                     b.Property<string>("MessageType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -112,12 +109,6 @@ namespace API.Data.Migrations
 
                     b.Property<int>("SenderId")
                         .HasColumnType("int");
-
-                    b.Property<double?>("VoiceDuration")
-                        .HasColumnType("float");
-
-                    b.Property<string>("VoiceUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

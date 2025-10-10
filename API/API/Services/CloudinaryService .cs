@@ -3,6 +3,7 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using NAudio.Wave;
 
 namespace API.Services
 {
@@ -18,6 +19,40 @@ namespace API.Services
                 config["Cloudinary:ApiSecret"]
             );
             _cloudinary = new Cloudinary(account);
+        }
+
+        public async Task<double?> GetAudioDurationAsync(IFormFile audioFile)
+        {
+            if (audioFile == null || audioFile.Length == 0)
+                return null;
+
+            // Tạo đường dẫn file tạm
+            var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + Path.GetExtension(audioFile.FileName));
+
+            try
+            {
+                // Lưu tạm file âm thanh
+                using (var stream = new FileStream(tempPath, FileMode.Create))
+                {
+                    await audioFile.CopyToAsync(stream);
+                }
+
+                // Đọc thời lượng bằng NAudio
+                using var reader = new AudioFileReader(tempPath);
+                var duration = reader.TotalTime.TotalSeconds;
+
+                return Math.Round(duration, 2); // làm tròn 2 chữ số thập phân
+            }
+            catch
+            {
+                return null; // nếu đọc lỗi thì trả về null
+            }
+            finally
+            {
+                // Xóa file tạm
+                if (File.Exists(tempPath))
+                    File.Delete(tempPath);
+            }
         }
 
         public async Task<string> UploadFileAsync(IFormFile file, string folder)

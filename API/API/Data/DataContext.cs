@@ -11,6 +11,7 @@ namespace API.Data
         public DbSet<Message> Messages { get; set; } = null!;
         public DbSet<MessageDeletion> MessageDeletions { get; set; } = null!;
         public DbSet<MessageFile> MessageFiles { get; set; }
+        public DbSet<MessageEditHistory> MessageEditHistories { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -35,6 +36,17 @@ namespace API.Data
                 .WithMany()
                 .HasForeignKey(md => md.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<MessageFile>()
+               .HasOne(mf => mf.Message)
+               .WithMany()
+               .HasForeignKey(mf => mf.MessageId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<MessageEditHistory>()
+                .HasOne(meh => meh.Message)
+                .WithMany()
+                .HasForeignKey(meh => meh.MessageId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -9,6 +9,7 @@ namespace API.Interfaces
 {
     public interface ICloudinaryService
     {
+        Task<double?> GetAudioDurationAsync(IFormFile audioFile);
         Task<string> UploadFileAsync(IFormFile file, string folder);
     }
 

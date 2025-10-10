@@ -158,12 +158,6 @@ C:\Users\hoiph\OneDrive\Desktop\API\API\obj\Debug\net8.0\refint\API.dll
 C:\Users\hoiph\OneDrive\Desktop\API\API\obj\Debug\net8.0\API.pdb
 C:\Users\hoiph\OneDrive\Desktop\API\API\obj\Debug\net8.0\API.genruntimeconfig.cache
 C:\Users\hoiph\OneDrive\Desktop\API\API\obj\Debug\net8.0\ref\API.dll
-C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.csproj.AssemblyReference.cache
-C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.AssemblyInfoInputs.cache
-C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.AssemblyInfo.cs
-C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.csproj.CoreCompileInputs.cache
-C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.sourcelink.json
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\appsettings.json
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\API.exe
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\API.deps.json
@@ -174,6 +168,7 @@ C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\Auto
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\Azure.Core.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\Azure.Identity.dll
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\CloudinaryDotNet.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\Humanizer.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
@@ -211,6 +206,12 @@ C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\Micr
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\Microsoft.SqlServer.Server.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\Mono.TextTemplating.dll
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\NAudio.dll
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\NAudio.Asio.dll
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\NAudio.Core.dll
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\NAudio.Midi.dll
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\NAudio.Wasapi.dll
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\NAudio.WinMM.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\Newtonsoft.Json.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\SQLitePCLRaw.batteries_v2.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\SQLitePCLRaw.core.dll
@@ -318,10 +319,15 @@ C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\runt
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.csproj.AssemblyReference.cache
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.AssemblyInfoInputs.cache
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.AssemblyInfo.cs
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.csproj.CoreCompileInputs.cache
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.sourcelink.json
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.csproj.Up2Date
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\refint\API.dll
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.pdb
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.genruntimeconfig.cache
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\ref\API.dll
-C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\CloudinaryDotNet.dll
