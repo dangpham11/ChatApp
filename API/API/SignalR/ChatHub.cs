@@ -1,21 +1,32 @@
-﻿// Hubs/ChatHub.cs
+﻿using API.Data;
+using API.DTOs;
+using API.Entities;
+using API.Interfaces;
+using API.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-[Authorize] // ensure JWT SignalR auth configured on client
+[Authorize] // JWT auth cho SignalR client
 public class ChatHub : Hub
 {
     private readonly IMessageService _messageService;
-    public ChatHub(IMessageService messageService)
+    private readonly ICloudinaryService _cloudinaryService;
+    private readonly DataContext _db;
+
+    public ChatHub(IMessageService messageService, ICloudinaryService cloudinaryService, DataContext db)
     {
         _messageService = messageService;
+        _cloudinaryService = cloudinaryService;
+        _db = db;
     }
 
-    // When client connects, you can add them to groups named by user id for direct messages
+    // Khi client kết nối, thêm họ vào group theo user id
     public override async Task OnConnectedAsync()
     {
-        var userIdStr = Context.UserIdentifier; // ensure ClaimTypes.NameIdentifier used
+        var userIdStr = Context.UserIdentifier; // ClaimTypes.NameIdentifier
         if (!string.IsNullOrEmpty(userIdStr))
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, $"u_{userIdStr}");
@@ -23,95 +34,77 @@ public class ChatHub : Hub
         await base.OnConnectedAsync();
     }
 
-    // send private message
-    public async Task SendPrivateMessage(int receiverId, string content, string messageType = "text", string? fileUrl = null)
+    // Gửi tin nhắn riêng, hỗ trợ nhiều file
+    public async Task SendPrivateMessage(
+        int receiverId,
+        string content,
+        string messageType = "text",
+        IFormFile[]? files = null
+    )
     {
         var userIdClaim = Context.User?.FindFirst(ClaimTypes.NameIdentifier);
         if (userIdClaim == null)
-        {
             throw new HubException("Unauthorized: UserId claim not found.");
-        }
+
         int senderId = int.Parse(userIdClaim.Value);
 
-        // Build message entity
-        var msg = new Message
+        // Tạo message entity
+        var message = new Message
         {
             SenderId = senderId,
             ReceiverId = receiverId,
             Content = content,
-            MessageType = messageType,
-            FileUrl = fileUrl
+            MessageType = messageType
         };
 
-        // Persist
-        var saved = await _messageService.CreateMessageAsync(msg);
+        // Lưu message vào DB
+        var savedMessage = await _messageService.CreateMessageAsync(message);
 
-        // Notify receiver (to group u_{receiverId}) and sender clients
-        var dto = new MessageDto
+        // Upload file nếu có
+        List<MessageFileDto> fileDtos = new();
+        if (files != null && files.Any())
         {
-            Id = saved.Id,
-            SenderId = saved.SenderId,
-            SenderUserName = Context.User?.Identity?.Name ?? string.Empty,
-            ReceiverId = saved.ReceiverId,
-            Content = saved.Content,
-            MessageType = saved.MessageType,
-            FileUrl = saved.FileUrl,
-            IsRead = saved.IsRead,
-            CreatedAt = saved.CreatedAt
-        };
+            foreach (var file in files)
+            {
+                string folder = messageType == "image" ? "chat_images" : "chat_files";
+                var fileUrl = await _cloudinaryService.UploadFileAsync(file, folder);
 
-        // to receiver
-        await Clients.Group($"u_{receiverId}").SendAsync("ReceivePrivateMessage", dto);
-        // to sender (so sender sees message delivered)
-        await Clients.Caller.SendAsync("ReceivePrivateMessage", dto);
-    }
+                var msgFile = new MessageFile
+                {
+                    MessageId = savedMessage.Id,
+                    FileUrl = fileUrl,
+                    FileType = messageType,
+                    FileName = file.FileName
+                };
 
-    // send group message
-    public async Task SendGroupMessage(int groupId, string content, string messageType = "text", string? fileUrl = null)
-    {
-        var userIdClaim = Context.User?.FindFirst(ClaimTypes.NameIdentifier);
-        if (userIdClaim == null)
-        {
-            throw new HubException("Unauthorized: UserId claim not found.");
+                _db.MessageFiles.Add(msgFile);
+
+                fileDtos.Add(new MessageFileDto
+                {
+                    FileUrl = fileUrl,
+                    FileType = messageType,
+                    FileName = file.FileName
+                });
+            }
+            await _db.SaveChangesAsync();
         }
-        int senderId = int.Parse(userIdClaim.Value);
 
-        var msg = new Message
-        {
-            SenderId = senderId,
-            GroupId = groupId,
-            Content = content,
-            MessageType = messageType,
-            FileUrl = fileUrl
-        };
-
-        var saved = await _messageService.CreateMessageAsync(msg);
-
+        // Tạo DTO gửi client
         var dto = new MessageDto
         {
-            Id = saved.Id,
-            SenderId = saved.SenderId,
+            Id = savedMessage.Id,
+            SenderId = savedMessage.SenderId,
             SenderUserName = Context.User?.Identity?.Name ?? string.Empty,
-            GroupId = saved.GroupId,
-            Content = saved.Content,
-            MessageType = saved.MessageType,
-            FileUrl = saved.FileUrl,
-            IsRead = saved.IsRead,
-            CreatedAt = saved.CreatedAt
+            ReceiverId = savedMessage.ReceiverId,
+            Content = savedMessage.Content,
+            MessageType = savedMessage.MessageType,
+            IsRead = savedMessage.IsRead,
+            CreatedAt = savedMessage.CreatedAt,
+            Files = fileDtos
         };
 
-        // Broadcast to group channel name "g_{groupId}"
-        await Clients.Group($"g_{groupId}").SendAsync("ReceiveGroupMessage", dto);
-    }
-
-    // Utility: join group room (call when user opens group chat)
-    public Task JoinGroupRoom(long groupId)
-    {
-        return Groups.AddToGroupAsync(Context.ConnectionId, $"g_{groupId}");
-    }
-
-    public Task LeaveGroupRoom(long groupId)
-    {
-        return Groups.RemoveFromGroupAsync(Context.ConnectionId, $"g_{groupId}");
+        // Gửi realtime tới receiver và sender
+        await Clients.Group($"u_{receiverId}").SendAsync("ReceivePrivateMessage", dto);
+        await Clients.Caller.SendAsync("ReceivePrivateMessage", dto);
     }
 }

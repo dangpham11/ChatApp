@@ -22,18 +22,24 @@ public class AccountController : ControllerBase
         _tokenService = tokenService;
     }
 
+    // Đăng ký
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(UserRegisterDto dto)
     {
-        if (await UserExists(dto.Username))
-            return BadRequest("Username is taken");
+        if (await UserExists(dto.Email))
+            return BadRequest("Email is already registered");
 
         using var hmac = new HMACSHA512();
 
         var user = new AppUser
         {
-            UserName = dto.Username.ToLower(),
-            DisplayName = dto.Username, // có thể gán mặc định bằng Username
+            Email = dto.Email.ToLower(),
+            FullName = dto.FullName,
+            DisplayName = dto.DisplayName,
+            BirthDate = dto.BirthDate,
+            Gender = dto.Gender,
+            PhoneNumber = dto.PhoneNumber,
+            AvatarUrl = dto.AvatarUrl, // có thể null
             PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dto.Password)),
             PasswordSalt = hmac.Key
         };
@@ -44,23 +50,23 @@ public class AccountController : ControllerBase
         return new UserDto
         {
             Id = user.Id,
-            Username = user.UserName,
-            DisplayName = user.DisplayName,
+            Email = user.Email,
             AvatarUrl = user.AvatarUrl,
             Token = _tokenService.CreateToken(user)
         };
     }
 
+
+    // Đăng nhập
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(UserLoginDto dto)
     {
         var user = await _context.Users
-            .SingleOrDefaultAsync(x => x.UserName == dto.Username.ToLower());
+            .SingleOrDefaultAsync(x => x.Email == dto.Email.ToLower());
 
-        if (user == null) return Unauthorized("Invalid username");
+        if (user == null) return Unauthorized("Invalid email");
 
         using var hmac = new HMACSHA512(user.PasswordSalt);
-
         var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dto.Password));
 
         for (int i = 0; i < computedHash.Length; i++)
@@ -72,15 +78,14 @@ public class AccountController : ControllerBase
         return new UserDto
         {
             Id = user.Id,
-            Username = user.UserName,
-            DisplayName = user.DisplayName,
+            Email = user.Email,
             AvatarUrl = user.AvatarUrl,
             Token = _tokenService.CreateToken(user)
         };
     }
 
-    private async Task<bool> UserExists(string username)
+    private async Task<bool> UserExists(string email)
     {
-        return await _context.Users.AnyAsync(x => x.UserName == username.ToLower());
+        return await _context.Users.AnyAsync(x => x.Email == email.ToLower());
     }
 }

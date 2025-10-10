@@ -24,6 +24,7 @@ builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
 builder.Services.AddCors(options =>
 {

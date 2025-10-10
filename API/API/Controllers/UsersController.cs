@@ -1,13 +1,12 @@
 ﻿using API.Data;
+using API.DTOs;
 using API.Entities;
-using Microsoft.AspNetCore.Mvc;
+using API.Interfaces;
+using API.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -17,59 +16,73 @@ namespace API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly DataContext _context;
+        private readonly ICloudinaryService _cloudinaryService;
 
-        public UsersController(DataContext context)
+        public UsersController(DataContext context, ICloudinaryService cloudinaryService)
         {
             _context = context;
+            _cloudinaryService = cloudinaryService;
         }
 
-        [HttpGet]
-        public ActionResult<IEnumerable<AppUser>> GetUsers()
+        // =============================
+        // 1. Lấy thông tin người dùng hiện tại
+        // =============================
+        [HttpGet("me")]
+        public async Task<IActionResult> GetCurrentUser()
         {
-            try
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound("Người dùng không tồn tại.");
+
+            return Ok(new UserDto
             {
-                var users = _context.Users.ToList();
-                return users;
-            }
-            catch (Exception ex)
-            {
-                // Return the error message for debugging
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-        [HttpGet("{id}")]
-        public ActionResult<AppUser> GetUser(int id)
-        {
-            try
-            {
-                var user = _context.Users.Find(id);
-                if (user == null)
-                {
-                    return NotFound($"User with ID {id} not found.");
-                }
-                return user;
-            }
-            catch (Exception ex)
-            {
-                // Return the error message for debugging
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+                Id = user.Id,
+                Email = user.Email,
+                FullName = user.FullName,
+                BirthDate = user.BirthDate,
+                Gender = user.Gender,
+                PhoneNumber = user.PhoneNumber,
+                AvatarUrl = user.AvatarUrl
+            });
         }
 
-        [HttpPost]
-        public ActionResult<AppUser> CreateUser(AppUser user)
+        // =============================
+        // 2. Cập nhật thông tin người dùng
+        // =============================
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateUser([FromForm] UpdateUserDto dto)
         {
-            try
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound("Người dùng không tồn tại.");
+
+            // Cập nhật các trường cơ bản
+            if (!string.IsNullOrWhiteSpace(dto.FullName)) user.FullName = dto.FullName;
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber)) user.PhoneNumber = dto.PhoneNumber;
+            if (dto.BirthDate != null) user.BirthDate = dto.BirthDate;
+            if (!string.IsNullOrWhiteSpace(dto.Gender)) user.Gender = dto.Gender;
+
+            // Cập nhật avatar nếu có file
+            if (dto.Avatar != null)
             {
-                _context.Users.Add(user);
-                _context.SaveChanges();
-                return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+                string avatarUrl = await _cloudinaryService.UploadFileAsync(dto.Avatar, "avatars");
+                user.AvatarUrl = avatarUrl;
             }
-            catch (Exception ex)
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new UserDto
             {
-                // Return the error message for debugging
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+                Id = user.Id,
+                Email = user.Email,
+                FullName = user.FullName,
+                BirthDate = user.BirthDate,
+                Gender = user.Gender,
+                PhoneNumber = user.PhoneNumber,
+                AvatarUrl = user.AvatarUrl
+            });
         }
     }
 }

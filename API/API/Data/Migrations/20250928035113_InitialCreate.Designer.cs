@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250927171057_InitialCreate")]
+    [Migration("20250928035113_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -36,8 +36,22 @@ namespace API.Data.Migrations
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("DisplayName")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("PasswordHash")
@@ -48,8 +62,7 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<string>("UserName")
-                        .IsRequired()
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -65,6 +78,9 @@ namespace API.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AppUserId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -76,6 +92,8 @@ namespace API.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AppUserId");
+
                     b.HasIndex("MessageId");
 
                     b.HasIndex("UserId");
@@ -83,7 +101,7 @@ namespace API.Data.Migrations
                     b.ToTable("MessageDeletions");
                 });
 
-            modelBuilder.Entity("Group", b =>
+            modelBuilder.Entity("API.Entities.MessageFile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -91,51 +109,29 @@ namespace API.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OwnerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("Groups");
-                });
-
-            modelBuilder.Entity("GroupMember", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("GroupId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("JoinedAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Role")
+                    b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MessageId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupId");
+                    b.HasIndex("MessageId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("GroupMembers");
+                    b.ToTable("MessageFiles");
                 });
 
             modelBuilder.Entity("Message", b =>
@@ -145,6 +141,9 @@ namespace API.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AppUserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -156,9 +155,6 @@ namespace API.Data.Migrations
                     b.Property<string>("FileUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("GroupId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
@@ -166,7 +162,7 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ReceiverId")
+                    b.Property<int>("ReceiverId")
                         .HasColumnType("int");
 
                     b.Property<int>("SenderId")
@@ -174,7 +170,7 @@ namespace API.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupId");
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("ReceiverId");
 
@@ -185,6 +181,10 @@ namespace API.Data.Migrations
 
             modelBuilder.Entity("API.Entities.MessageDeletion", b =>
                 {
+                    b.HasOne("API.Entities.AppUser", null)
+                        .WithMany("MessageDeletions")
+                        .HasForeignKey("AppUserId");
+
                     b.HasOne("Message", "Message")
                         .WithMany()
                         .HasForeignKey("MessageId")
@@ -202,54 +202,34 @@ namespace API.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Group", b =>
+            modelBuilder.Entity("API.Entities.MessageFile", b =>
                 {
-                    b.HasOne("API.Entities.AppUser", "Owner")
+                    b.HasOne("Message", "Message")
                         .WithMany()
-                        .HasForeignKey("OwnerId")
+                        .HasForeignKey("MessageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("GroupMember", b =>
-                {
-                    b.HasOne("Group", "Group")
-                        .WithMany("Members")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("API.Entities.AppUser", "User")
-                        .WithMany("GroupMembers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Group");
-
-                    b.Navigation("User");
+                    b.Navigation("Message");
                 });
 
             modelBuilder.Entity("Message", b =>
                 {
-                    b.HasOne("Group", "Group")
-                        .WithMany("Messages")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("API.Entities.AppUser", null)
+                        .WithMany("ReceivedMessages")
+                        .HasForeignKey("AppUserId");
 
                     b.HasOne("API.Entities.AppUser", "Receiver")
                         .WithMany()
                         .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("API.Entities.AppUser", "Sender")
                         .WithMany("SentMessages")
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Group");
 
                     b.Navigation("Receiver");
 
@@ -258,16 +238,11 @@ namespace API.Data.Migrations
 
             modelBuilder.Entity("API.Entities.AppUser", b =>
                 {
-                    b.Navigation("GroupMembers");
+                    b.Navigation("MessageDeletions");
+
+                    b.Navigation("ReceivedMessages");
 
                     b.Navigation("SentMessages");
-                });
-
-            modelBuilder.Entity("Group", b =>
-                {
-                    b.Navigation("Members");
-
-                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

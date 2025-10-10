@@ -324,3 +324,4 @@ C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\refi
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.pdb
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\API.genruntimeconfig.cache
 C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\obj\Debug\net8.0\ref\API.dll
+C:\Users\hoiph\OneDrive\Tài liệu\GitHub\ChatApp\API\api\bin\Debug\net8.0\CloudinaryDotNet.dll

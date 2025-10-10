@@ -1,6 +1,6 @@
-﻿// Services/MessageService.cs
-using API.Data;
+﻿using API.Data;
 using Microsoft.EntityFrameworkCore;
+using API.Entities;
 
 public class MessageService : IMessageService
 {
@@ -11,6 +11,7 @@ public class MessageService : IMessageService
         _db = db;
     }
 
+    // Tạo tin nhắn mới
     public async Task<Message> CreateMessageAsync(Message message)
     {
         _db.Messages.Add(message);
@@ -18,21 +19,13 @@ public class MessageService : IMessageService
         return message;
     }
 
+    // Lấy hội thoại giữa 2 user (mới nhất theo CreatedAt)
     public async Task<IEnumerable<Message>> GetConversationAsync(int userId, int otherUserId, int take = 50)
     {
         return await _db.Messages
             .Where(m =>
                 (m.SenderId == userId && m.ReceiverId == otherUserId) ||
                 (m.SenderId == otherUserId && m.ReceiverId == userId))
-            .OrderByDescending(m => m.CreatedAt)
-            .Take(take)
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<Message>> GetGroupMessagesAsync(int groupId, int take = 50)
-    {
-        return await _db.Messages
-            .Where(m => m.GroupId == groupId)
             .OrderByDescending(m => m.CreatedAt)
             .Take(take)
             .ToListAsync();

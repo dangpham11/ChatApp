@@ -1,4 +1,5 @@
 ﻿using API.Entities;
+using System;
 
 public class Message
 {
@@ -6,13 +7,8 @@ public class Message
     public int SenderId { get; set; }
     public AppUser Sender { get; set; } = null!;
 
-    // Nếu private message giữa 2 user -> set ReceiverId
-    public int? ReceiverId { get; set; }
-    public AppUser? Receiver { get; set; }
-
-    // Nếu group message -> set GroupId
-    public int? GroupId { get; set; }
-    public Group? Group { get; set; }
+    public int ReceiverId { get; set; }
+    public AppUser Receiver { get; set; } = null!;
 
     public string Content { get; set; } = string.Empty;
     public string MessageType { get; set; } = "text"; // text | image | file

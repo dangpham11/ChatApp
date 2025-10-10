@@ -1,23 +1,27 @@
-﻿using Microsoft.Extensions.Hosting;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace API.Entities;
 
 public class AppUser
 {
     public int Id { get; set; }
-    public string UserName { get; set; } = null!;
+
+    // Đăng nhập bằng email
+    public string Email { get; set; } = null!;
     public byte[] PasswordHash { get; set; } = null!;
     public byte[] PasswordSalt { get; set; } = null!;
+
+    // Thông tin cá nhân
+    public string FullName { get; set; } = null!;
     public string DisplayName { get; set; } = null!;
-    public string? AvatarUrl { get; set; } 
-    // ... các trường khác (email, password hash, ...)
+    public string? AvatarUrl { get; set; }
+    public DateTime? BirthDate { get; set; }
+    public string? Gender { get; set; }
+    public string? PhoneNumber { get; set; }
+
+    // Quan hệ
     public ICollection<Message> SentMessages { get; set; } = new List<Message>();
-    public ICollection<GroupMember> GroupMembers { get; set; } = new List<GroupMember>();
-
+    public ICollection<Message> ReceivedMessages { get; set; } = new List<Message>();
+    public ICollection<MessageDeletion> MessageDeletions { get; set; } = new List<MessageDeletion>();
 }
-
