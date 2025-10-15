@@ -4,6 +4,7 @@ using API.Helpers;
 using API.Interfaces;
 using API.Middleware;
 using API.Services;
+using API.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -137,9 +138,11 @@ app.Lifetime.ApplicationStarted.Register(() =>
 app.UseCors("AllowReact");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<ActivityTrackerMiddleware>();
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chathub");
+app.MapHub<PresenceHub>("/presencehub");
 
 // ===============================
 // 9️⃣ Run app

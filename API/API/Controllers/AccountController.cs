@@ -35,11 +35,6 @@ public class AccountController : ControllerBase
         {
             Email = dto.Email.ToLower(),
             FullName = dto.FullName,
-            DisplayName = dto.DisplayName,
-            BirthDate = dto.BirthDate,
-            Gender = dto.Gender,
-            PhoneNumber = dto.PhoneNumber,
-            AvatarUrl = dto.AvatarUrl, // có thể null
             PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dto.Password)),
             PasswordSalt = hmac.Key
         };
@@ -51,9 +46,14 @@ public class AccountController : ControllerBase
         {
             Id = user.Id,
             Email = user.Email,
+            FullName = user.FullName,
+            BirthDate = user.BirthDate,
+            Gender = user.Gender,
+            PhoneNumber = user.PhoneNumber,
             AvatarUrl = user.AvatarUrl,
             Token = _tokenService.CreateToken(user)
         };
+
     }
 
 
@@ -79,9 +79,14 @@ public class AccountController : ControllerBase
         {
             Id = user.Id,
             Email = user.Email,
+            FullName = user.FullName,
+            BirthDate = user.BirthDate,
+            Gender = user.Gender,
+            PhoneNumber = user.PhoneNumber,
             AvatarUrl = user.AvatarUrl,
             Token = _tokenService.CreateToken(user)
         };
+
     }
 
     private async Task<bool> UserExists(string email)

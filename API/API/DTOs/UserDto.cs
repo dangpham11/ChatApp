@@ -8,6 +8,8 @@ public class UserDto
     public DateTime? BirthDate { get; set; }
     public string? Gender { get; set; }
     public string? PhoneNumber { get; set; }
+    public string? Location { get; set; }
+    public string? Bio { get; set; }  // tiểu sử
     public string? AvatarUrl { get; set; }
     public string? Token { get; set; } 
 }

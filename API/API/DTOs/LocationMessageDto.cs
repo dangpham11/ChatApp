@@ -8,7 +8,7 @@ namespace API.DTOs
 {
     public class LocationMessageDto
     {
-        public int ReceiverId { get; set; }
+        public int ConversationId { get; set; }
         public double Latitude { get; set; }   // Vĩ độ
         public double Longitude { get; set; }  // Kinh độ
     }

@@ -33,12 +33,11 @@ namespace API.Data.Migrations
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -49,6 +48,15 @@ namespace API.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsOnline")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastActive")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Location")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("PasswordHash")
@@ -67,6 +75,130 @@ namespace API.Data.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("API.Entities.Conversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ConversationAvatarUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConversationName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAtUser1")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAtUser2")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("LastMessageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NicknameUser1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NicknameUser2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("User1Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("User1Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("User1Muted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("User2Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("User2Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("User2Muted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LastMessageId")
+                        .IsUnique()
+                        .HasFilter("[LastMessageId] IS NOT NULL");
+
+                    b.HasIndex("User2Id");
+
+                    b.HasIndex("User1Id", "User2Id")
+                        .IsUnique();
+
+                    b.ToTable("Conversations");
+                });
+
+            modelBuilder.Entity("API.Entities.ConversationBlock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("BlockedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("BlockedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BlockedUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlockedUserId");
+
+                    b.HasIndex("ConversationId");
+
+                    b.ToTable("ConversationBlock");
+                });
+
+            modelBuilder.Entity("API.Entities.Friendship", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FriendId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FriendId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Friendships");
+                });
+
             modelBuilder.Entity("API.Entities.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -75,12 +207,12 @@ namespace API.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AppUserId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -90,6 +222,9 @@ namespace API.Data.Migrations
 
                     b.Property<string>("FileUrl")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ForwardedFromId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsPinned")
                         .HasColumnType("bit");
@@ -110,6 +245,9 @@ namespace API.Data.Migrations
                     b.Property<int>("ReceiverId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ReplyToMessageId")
+                        .HasColumnType("int");
+
                     b.Property<int>("SenderId")
                         .HasColumnType("int");
 
@@ -121,9 +259,13 @@ namespace API.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("ForwardedFromId");
 
                     b.HasIndex("ReceiverId");
+
+                    b.HasIndex("ReplyToMessageId");
 
                     b.HasIndex("SenderId");
 
@@ -138,9 +280,6 @@ namespace API.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AppUserId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -151,8 +290,6 @@ namespace API.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
 
                     b.HasIndex("MessageId");
 
@@ -223,17 +360,124 @@ namespace API.Data.Migrations
                     b.ToTable("MessageFiles");
                 });
 
+            modelBuilder.Entity("API.Entities.MessageReaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MessageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReactionType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId");
+
+                    b.HasIndex("UserId", "MessageId")
+                        .IsUnique();
+
+                    b.ToTable("MessageReactions");
+                });
+
+            modelBuilder.Entity("API.Entities.Conversation", b =>
+                {
+                    b.HasOne("API.Entities.Message", "LastMessage")
+                        .WithOne()
+                        .HasForeignKey("API.Entities.Conversation", "LastMessageId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("API.Entities.AppUser", "User1")
+                        .WithMany("ConversationsAsUser1")
+                        .HasForeignKey("User1Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.AppUser", "User2")
+                        .WithMany("ConversationsAsUser2")
+                        .HasForeignKey("User2Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LastMessage");
+
+                    b.Navigation("User1");
+
+                    b.Navigation("User2");
+                });
+
+            modelBuilder.Entity("API.Entities.ConversationBlock", b =>
+                {
+                    b.HasOne("API.Entities.AppUser", "BlockedUser")
+                        .WithMany()
+                        .HasForeignKey("BlockedUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.Conversation", "Conversation")
+                        .WithMany("BlockedUsers")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BlockedUser");
+
+                    b.Navigation("Conversation");
+                });
+
+            modelBuilder.Entity("API.Entities.Friendship", b =>
+                {
+                    b.HasOne("API.Entities.AppUser", "Friend")
+                        .WithMany()
+                        .HasForeignKey("FriendId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Friend");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("API.Entities.Message", b =>
                 {
-                    b.HasOne("API.Entities.AppUser", null)
-                        .WithMany("ReceivedMessages")
-                        .HasForeignKey("AppUserId");
+                    b.HasOne("API.Entities.Conversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.AppUser", "ForwardedFrom")
+                        .WithMany()
+                        .HasForeignKey("ForwardedFromId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("API.Entities.AppUser", "Receiver")
                         .WithMany()
                         .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("API.Entities.Message", "ReplyToMessage")
+                        .WithMany()
+                        .HasForeignKey("ReplyToMessageId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("API.Entities.AppUser", "Sender")
                         .WithMany("SentMessages")
@@ -241,27 +485,29 @@ namespace API.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Conversation");
+
+                    b.Navigation("ForwardedFrom");
+
                     b.Navigation("Receiver");
+
+                    b.Navigation("ReplyToMessage");
 
                     b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("API.Entities.MessageDeletion", b =>
                 {
-                    b.HasOne("API.Entities.AppUser", null)
-                        .WithMany("MessageDeletions")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("API.Entities.Message", "Message")
-                        .WithMany()
+                        .WithMany("MessageDeletions")
                         .HasForeignKey("MessageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("API.Entities.AppUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Message");
@@ -272,7 +518,7 @@ namespace API.Data.Migrations
             modelBuilder.Entity("API.Entities.MessageEditHistory", b =>
                 {
                     b.HasOne("API.Entities.Message", "Message")
-                        .WithMany()
+                        .WithMany("EditHistories")
                         .HasForeignKey("MessageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -283,7 +529,7 @@ namespace API.Data.Migrations
             modelBuilder.Entity("API.Entities.MessageFile", b =>
                 {
                     b.HasOne("API.Entities.Message", "Message")
-                        .WithMany()
+                        .WithMany("MessageFiles")
                         .HasForeignKey("MessageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -291,13 +537,50 @@ namespace API.Data.Migrations
                     b.Navigation("Message");
                 });
 
+            modelBuilder.Entity("API.Entities.MessageReaction", b =>
+                {
+                    b.HasOne("API.Entities.Message", "Message")
+                        .WithMany("Reactions")
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Message");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("API.Entities.AppUser", b =>
                 {
-                    b.Navigation("MessageDeletions");
+                    b.Navigation("ConversationsAsUser1");
 
-                    b.Navigation("ReceivedMessages");
+                    b.Navigation("ConversationsAsUser2");
 
                     b.Navigation("SentMessages");
+                });
+
+            modelBuilder.Entity("API.Entities.Conversation", b =>
+                {
+                    b.Navigation("BlockedUsers");
+
+                    b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("API.Entities.Message", b =>
+                {
+                    b.Navigation("EditHistories");
+
+                    b.Navigation("MessageDeletions");
+
+                    b.Navigation("MessageFiles");
+
+                    b.Navigation("Reactions");
                 });
 #pragma warning restore 612, 618
         }

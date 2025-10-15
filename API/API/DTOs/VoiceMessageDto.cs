@@ -9,7 +9,7 @@ namespace API.DTOs
 {
     public class VoiceMessageDto
     {
-        public int ReceiverId { get; set; }
+        public int ConversationId { get; set; }
         public IFormFile AudioFile { get; set; } = null!;
     }
 }

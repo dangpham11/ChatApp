@@ -18,16 +18,4 @@ public class MessageService : IMessageService
         await _db.SaveChangesAsync();
         return message;
     }
-
-    // Lấy hội thoại giữa 2 user (mới nhất theo CreatedAt)
-    public async Task<IEnumerable<Message>> GetConversationAsync(int userId, int otherUserId, int take = 50)
-    {
-        return await _db.Messages
-            .Where(m =>
-                (m.SenderId == userId && m.ReceiverId == otherUserId) ||
-                (m.SenderId == otherUserId && m.ReceiverId == userId))
-            .OrderByDescending(m => m.CreatedAt)
-            .Take(take)
-            .ToListAsync();
-    }
 }
