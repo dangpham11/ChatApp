@@ -1,123 +1,115 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entities;
-using API.Interfaces;
-using API.Services;
-using API.SignalR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly DataContext _context;
-        private readonly ICloudinaryService _cloudinaryService;
-        private readonly DataContext _db;
 
-
-        public UsersController(DataContext context, ICloudinaryService cloudinaryService, DataContext db)
+        public UsersController(DataContext context)
         {
             _context = context;
-            _cloudinaryService = cloudinaryService;
-            _db = db;
         }
 
-        // =============================
-        // 1. Lấy thông tin người dùng hiện tại
-        // =============================
-        [HttpGet("me")]
-        public async Task<IActionResult> GetCurrentUser()
+        // =========================
+        // 🔍 SEARCH USERS
+        // GET: /api/Users/search?query=abc
+        // =========================
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<UserSearchDto>>> SearchUsers([FromQuery] string query)
         {
-            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (string.IsNullOrWhiteSpace(query))
+                return BadRequest(new { message = "Query cannot be empty." });
 
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null) return NotFound("Người dùng không tồn tại.");
-
-            return Ok(new UserDto
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var currentUserId))
             {
-                Id = user.Id,
-                Email = user.Email,
-                FullName = user.FullName,
-                BirthDate = user.BirthDate,
-                Gender = user.Gender,
-                PhoneNumber = user.PhoneNumber,
-                Location = user.Location,
-                Bio = user.Bio,
-                AvatarUrl = user.AvatarUrl
-            });
-        }
-
-        // =============================
-        // 📡 GET: /api/users/online-status/{id}
-        // =============================
-        [HttpGet("online-status/{id}")]
-        public async Task<ActionResult<object>> GetUserOnlineStatus(int id)
-        {
-            var user = await _db.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == id);
-
-            if (user == null)
-                return NotFound(new { message = "User not found" });
-
-            // 🧠 Kiểm tra user có đang online trong SignalR không
-            bool isOnline = PresenceHub.IsUserOnline(id);
-
-            return Ok(new
-            {
-                user.Id,
-                user.FullName,
-                IsOnline = isOnline,
-                user.LastActive
-            });
-        }
-
-        // =============================
-        // 2. Cập nhật thông tin người dùng
-        // =============================
-        [HttpPut("update")]
-        public async Task<IActionResult> UpdateUser([FromForm] UpdateUserDto dto)
-        {
-            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null) return NotFound("Người dùng không tồn tại.");
-
-            // Cập nhật các trường cơ bản
-            if (!string.IsNullOrWhiteSpace(dto.FullName)) user.FullName = dto.FullName;
-            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber)) user.PhoneNumber = dto.PhoneNumber;
-            if (dto.BirthDate != null) user.BirthDate = dto.BirthDate;
-            if (!string.IsNullOrWhiteSpace(dto.Gender)) user.Gender = dto.Gender;
-            if (!string.IsNullOrWhiteSpace(dto.Location)) user.Location = dto.Location;
-            if (!string.IsNullOrWhiteSpace(dto.Bio)) user.Bio = dto.Bio;
-
-            // Cập nhật avatar nếu có file
-            if (dto.Avatar != null)
-            {
-                string avatarUrl = await _cloudinaryService.UploadFileAsync(dto.Avatar, "avatars");
-                user.AvatarUrl = avatarUrl;
+                return Unauthorized(new { message = "Invalid or missing user ID in token." });
             }
 
-            await _context.SaveChangesAsync();
+            // ✅ Lấy danh sách userId đã có cuộc trò chuyện 1-1 với current user
+            var existingUserIds = await _context.ConversationParticipants
+                .Where(cp1 => _context.ConversationParticipants
+                    .Any(cp2 => cp2.ConversationId == cp1.ConversationId && cp2.UserId == currentUserId))
+                .Select(cp1 => cp1.UserId)
+                .Where(uid => uid != currentUserId)
+                .Distinct()
+                .ToListAsync();
 
-            return Ok(new UserDto
+            // ✅ Tìm kiếm user chưa có cuộc trò chuyện 1-1 với current user
+            var users = await _context.Users
+                .Where(u => u.Id != currentUserId &&
+                            !existingUserIds.Contains(u.Id) &&
+                            (u.Name.Contains(query) || u.Email.Contains(query)))
+                .Select(u => new UserSearchDto
+                {
+                    Id = u.Id,
+                    Email = u.Email,
+                    Name = u.Name,
+                    Avatar = u.Avatar,
+                    IsOnline = u.IsOnline
+                })
+                .Take(20)
+                .ToListAsync();
+
+            return Ok(users);
+        }
+
+        // =========================
+        // 📧 GET USER BY EMAIL
+        // GET: /api/Users/by-email?email=abc@gmail.com
+        // =========================
+        [HttpGet("by-email")]
+        public async Task<ActionResult<UserSearchDto>> GetUserByEmail([FromQuery] string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return BadRequest(new { message = "Email is required." });
+
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var currentUserId))
             {
-                Id = user.Id,
-                Email = user.Email,
-                FullName = user.FullName,
-                BirthDate = user.BirthDate,
-                Gender = user.Gender,
-                PhoneNumber = user.PhoneNumber,
-                Location = user.Location,
-                Bio = user.Bio,
-                AvatarUrl = user.AvatarUrl
-            });
+                return Unauthorized(new { message = "Invalid or missing user ID in token." });
+            }
+
+            // ✅ Kiểm tra xem đã có cuộc trò chuyện 1-1 chưa
+            var hasConversation = await _context.Conversations
+                .AnyAsync(c =>
+                    c.Participants.Any(p => p.UserId == currentUserId) &&
+                    c.Participants.Any(p => p.User.Email == email)
+                );
+
+            if (hasConversation)
+                return NotFound(new { message = "You already have a private conversation with this user." });
+
+            var user = await _context.Users
+                .Where(u => u.Email == email && u.Id != currentUserId)
+                .Select(u => new UserSearchDto
+                {
+                    Id = u.Id,
+                    Email = u.Email,
+                    Name = u.Name,
+                    Avatar = u.Avatar,
+                    IsOnline = u.IsOnline
+                })
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+                return NotFound(new { message = "User not found." });
+
+            return Ok(user);
         }
     }
 }

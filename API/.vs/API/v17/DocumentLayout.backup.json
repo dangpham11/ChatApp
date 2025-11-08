@@ -3,172 +3,44 @@
   "WorkspaceRootPath": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\controllers\\conversationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\controllers\\conversationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\controllers\\callcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\controllers\\callcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\userregisterdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\userregisterdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\controllers\\messagescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\controllers\\messagescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\interfaces\\imessageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\interfaces\\imessageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\controllers\\filescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\controllers\\filescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\services\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\services\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\messageresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\messageresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\signalr\\presencehub .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\signalr\\presencehub .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\entities\\conversationparticipant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\entities\\conversationparticipant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\signalr\\chathub.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\signalr\\chathub.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\entities\\appuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\entities\\appuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\entities\\conversation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\entities\\conversation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\entities\\conversationblock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\entities\\conversationblock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\entities\\friendship.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\entities\\friendship.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\controllers\\conversationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\controllers\\conversationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\entities\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\entities\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\entities\\messagedeletion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\entities\\messagedeletion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\signalr\\chathub.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\signalr\\chathub.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\entities\\messageedithistory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\entities\\messageedithistory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\entities\\messagefile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\entities\\messagefile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\entities\\conversation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\entities\\conversation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\entities\\messagereaction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\entities\\messagereaction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\interfaces\\icloudinaryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\interfaces\\icloudinaryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\services\\tokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\services\\tokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\blockuserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\blockuserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\data\\datacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\data\\datacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\controllers\\friendscontroller .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\controllers\\friendscontroller .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\forwardmessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\forwardmessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\locationmessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\locationmessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\replymessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\replymessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\voicemessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\voicemessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\createmessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\createmessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\messagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\messagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\messagefiledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\messagefiledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\userlogindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\userlogindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\updateuserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\updateuserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\updatemessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\updatemessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\setnicknamedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\setnicknamedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\dtos\\conversationdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\dtos\\conversationdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\interfaces\\itokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\interfaces\\itokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\middleware\\activitytrackermiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\middleware\\activitytrackermiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\data\\migrations\\20251012015625_deleteatconversation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\data\\migrations\\20251012015625_deleteatconversation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\data\\migrations\\20251012012650_deleteconversation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\data\\migrations\\20251012012650_deleteconversation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|c:\\users\\hoiph\\onedrive\\t\u00E0i li\u1EC7u\\github\\chatapp\\api\\api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68AA8F3D-3535-4F41-8D9D-D70C111A1F50}|API\\API.csproj|solutionrelative:api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -178,536 +50,129 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 6,
               "Title": "ChatHub.cs",
               "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\SignalR\\ChatHub.cs",
               "RelativeDocumentMoniker": "API\\SignalR\\ChatHub.cs",
               "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\SignalR\\ChatHub.cs",
               "RelativeToolTip": "API\\SignalR\\ChatHub.cs",
-              "ViewState": "AgIAAM0AAAAAAAAAAAAcwPgAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAIgAAAAAAAAAAAAAAKAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T03:06:47.782Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-16T04:36:22.814Z",
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "PresenceHub .cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\SignalR\\PresenceHub .cs",
-              "RelativeDocumentMoniker": "API\\SignalR\\PresenceHub .cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\SignalR\\PresenceHub .cs",
-              "RelativeToolTip": "API\\SignalR\\PresenceHub .cs",
-              "ViewState": "AgIAABcAAAAAAAAAAAAowEAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "MessageResponseDto.cs",
+              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\MessageResponseDto.cs",
+              "RelativeDocumentMoniker": "API\\DTOs\\MessageResponseDto.cs",
+              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\MessageResponseDto.cs",
+              "RelativeToolTip": "API\\DTOs\\MessageResponseDto.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAA8wBcAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T02:05:09.773Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-03T06:15:35.254Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "MessageService.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Services\\MessageService.cs",
-              "RelativeDocumentMoniker": "API\\Services\\MessageService.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Services\\MessageService.cs",
-              "RelativeToolTip": "API\\Services\\MessageService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAxAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "FilesController.cs",
+              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\FilesController.cs",
+              "RelativeDocumentMoniker": "API\\Controllers\\FilesController.cs",
+              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\FilesController.cs",
+              "RelativeToolTip": "API\\Controllers\\FilesController.cs",
+              "ViewState": "AgIAAHoAAAAAAAAAAAAgwJQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T00:18:17.555Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-22T10:09:09.626Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "IMessageService.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Interfaces\\IMessageService.cs",
-              "RelativeDocumentMoniker": "API\\Interfaces\\IMessageService.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Interfaces\\IMessageService.cs",
-              "RelativeToolTip": "API\\Interfaces\\IMessageService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAASAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T00:18:29.91Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "MessagesController.cs",
               "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\MessagesController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\MessagesController.cs",
               "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\MessagesController.cs",
               "RelativeToolTip": "API\\Controllers\\MessagesController.cs",
-              "ViewState": "AgIAAKkCAAAAAAAAAAAwwN8CAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADoBAAAAAAAAAAAuwFABAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-11T08:21:12.617Z",
+              "WhenOpened": "2025-10-22T03:15:08.193Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "AccountController.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\AccountController.cs",
-              "RelativeDocumentMoniker": "API\\Controllers\\AccountController.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\AccountController.cs",
-              "RelativeToolTip": "API\\Controllers\\AccountController.cs",
-              "ViewState": "AgIAABEAAAAAAAAAAAAgwCQAAAAkAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-13T10:03:25.201Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "UserRegisterDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\UserRegisterDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\UserRegisterDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\UserRegisterDto.cs",
-              "RelativeToolTip": "API\\DTOs\\UserRegisterDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAswA4AAAA1AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T11:24:54.2Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "CallController.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\CallController.cs",
-              "RelativeDocumentMoniker": "API\\Controllers\\CallController.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\CallController.cs",
-              "RelativeToolTip": "API\\Controllers\\CallController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-11T08:51:44.169Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 4,
               "Title": "ConversationsController.cs",
               "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\ConversationsController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\ConversationsController.cs",
               "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\ConversationsController.cs",
               "RelativeToolTip": "API\\Controllers\\ConversationsController.cs",
-              "ViewState": "AgIAAC8AAAAAAAAAAAAUwD8BAAAxAAAAAAAAAA==",
+              "ViewState": "AgIAAEYAAAAAAAAAAAAawFkAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-11T08:21:10.154Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-16T03:42:48.255Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "Message.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\Message.cs",
-              "RelativeDocumentMoniker": "API\\Entities\\Message.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\Message.cs",
-              "RelativeToolTip": "API\\Entities\\Message.cs",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAwwCwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T00:10:06.852Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "Friendship.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\Friendship.cs",
-              "RelativeDocumentMoniker": "API\\Entities\\Friendship.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\Friendship.cs",
-              "RelativeToolTip": "API\\Entities\\Friendship.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T02:25:59.338Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "ConversationBlock.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\ConversationBlock.cs",
-              "RelativeDocumentMoniker": "API\\Entities\\ConversationBlock.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\ConversationBlock.cs",
-              "RelativeToolTip": "API\\Entities\\ConversationBlock.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T10:30:45.353Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 8,
               "Title": "Conversation.cs",
               "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\Conversation.cs",
               "RelativeDocumentMoniker": "API\\Entities\\Conversation.cs",
               "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\Conversation.cs",
               "RelativeToolTip": "API\\Entities\\Conversation.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAIwCsAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-11T08:18:45.641Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-17T04:40:11.236Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\User.cs",
+              "RelativeDocumentMoniker": "API\\Entities\\User.cs",
+              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\User.cs",
+              "RelativeToolTip": "API\\Entities\\User.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAkwB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-16T03:49:35.713Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ConversationParticipant.cs",
+              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\ConversationParticipant.cs",
+              "RelativeDocumentMoniker": "API\\Entities\\ConversationParticipant.cs",
+              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\ConversationParticipant.cs",
+              "RelativeToolTip": "API\\Entities\\ConversationParticipant.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-17T04:40:17.322Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 9,
-              "Title": "AppUser.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\AppUser.cs",
-              "RelativeDocumentMoniker": "API\\Entities\\AppUser.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\AppUser.cs",
-              "RelativeToolTip": "API\\Entities\\AppUser.cs",
-              "ViewState": "AgIAAAIAAAAAAAAAAAAcwBEAAAAsAAAAAAAAAA==",
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "API\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "API\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAOIAAAAAAAAAAAAuwAkBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T01:57:59.872Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-15T09:09:21.721Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "MessageDeletion.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\MessageDeletion.cs",
-              "RelativeDocumentMoniker": "API\\Entities\\MessageDeletion.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\MessageDeletion.cs",
-              "RelativeToolTip": "API\\Entities\\MessageDeletion.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "DocumentIndex": 5,
+              "Title": "Message.cs",
+              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\Message.cs",
+              "RelativeDocumentMoniker": "API\\Entities\\Message.cs",
+              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\Message.cs",
+              "RelativeToolTip": "API\\Entities\\Message.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAzwAoAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T10:15:09.7Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "MessageEditHistory.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\MessageEditHistory.cs",
-              "RelativeDocumentMoniker": "API\\Entities\\MessageEditHistory.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\MessageEditHistory.cs",
-              "RelativeToolTip": "API\\Entities\\MessageEditHistory.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T10:15:08.699Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "MessageFile.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\MessageFile.cs",
-              "RelativeDocumentMoniker": "API\\Entities\\MessageFile.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\MessageFile.cs",
-              "RelativeToolTip": "API\\Entities\\MessageFile.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T10:15:07.089Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "MessageReaction.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\MessageReaction.cs",
-              "RelativeDocumentMoniker": "API\\Entities\\MessageReaction.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Entities\\MessageReaction.cs",
-              "RelativeToolTip": "API\\Entities\\MessageReaction.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAABCAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T03:20:01.811Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Program.cs",
-              "RelativeDocumentMoniker": "API\\Program.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Program.cs",
-              "RelativeToolTip": "API\\Program.cs",
-              "ViewState": "AgIAAGsAAAAAAAAAAAAcwJYAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T02:10:04.636Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "ICloudinaryService.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Interfaces\\ICloudinaryService.cs",
-              "RelativeDocumentMoniker": "API\\Interfaces\\ICloudinaryService.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Interfaces\\ICloudinaryService.cs",
-              "RelativeToolTip": "API\\Interfaces\\ICloudinaryService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-14T12:13:20.952Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "TokenService.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Services\\TokenService.cs",
-              "RelativeDocumentMoniker": "API\\Services\\TokenService.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Services\\TokenService.cs",
-              "RelativeToolTip": "API\\Services\\TokenService.cs",
-              "ViewState": "AgIAAAEAAAAAAAAAAAAowCoAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T02:48:17.356Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "BlockUserDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\BlockUserDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\BlockUserDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\BlockUserDto.cs",
-              "RelativeToolTip": "API\\DTOs\\BlockUserDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T12:07:40.856Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "DataContext.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Data\\DataContext.cs",
-              "RelativeDocumentMoniker": "API\\Data\\DataContext.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Data\\DataContext.cs",
-              "RelativeToolTip": "API\\Data\\DataContext.cs",
-              "ViewState": "AgIAAGIAAAAAAAAAAAAcwI0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T00:42:57.63Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": "UsersController.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\UsersController.cs",
-              "RelativeDocumentMoniker": "API\\Controllers\\UsersController.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\UsersController.cs",
-              "RelativeToolTip": "API\\Controllers\\UsersController.cs",
-              "ViewState": "AgIAAFEAAAAAAAAAAAAIwHsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T01:53:52.859Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 24,
-              "Title": "FriendsController .cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\FriendsController .cs",
-              "RelativeDocumentMoniker": "API\\Controllers\\FriendsController .cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Controllers\\FriendsController .cs",
-              "RelativeToolTip": "API\\Controllers\\FriendsController .cs",
-              "ViewState": "AgIAAPAAAAAAAAAAAAAIwBoBAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T02:29:11.794Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 25,
-              "Title": "ForwardMessageDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\ForwardMessageDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\ForwardMessageDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\ForwardMessageDto.cs",
-              "RelativeToolTip": "API\\DTOs\\ForwardMessageDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAATAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T00:16:49.535Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 26,
-              "Title": "LocationMessageDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\LocationMessageDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\LocationMessageDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\LocationMessageDto.cs",
-              "RelativeToolTip": "API\\DTOs\\LocationMessageDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T00:26:03.999Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 27,
-              "Title": "ReplyMessageDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\ReplyMessageDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\ReplyMessageDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\ReplyMessageDto.cs",
-              "RelativeToolTip": "API\\DTOs\\ReplyMessageDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T01:16:10.925Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 28,
-              "Title": "VoiceMessageDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\VoiceMessageDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\VoiceMessageDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\VoiceMessageDto.cs",
-              "RelativeToolTip": "API\\DTOs\\VoiceMessageDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T12:09:27.274Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 29,
-              "Title": "CreateMessageDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\CreateMessageDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\CreateMessageDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\CreateMessageDto.cs",
-              "RelativeToolTip": "API\\DTOs\\CreateMessageDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAdAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T01:01:54.382Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 30,
-              "Title": "MessageDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\MessageDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\MessageDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\MessageDto.cs",
-              "RelativeToolTip": "API\\DTOs\\MessageDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAmAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T00:36:21.649Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 31,
-              "Title": "MessageFileDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\MessageFileDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\MessageFileDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\MessageFileDto.cs",
-              "RelativeToolTip": "API\\DTOs\\MessageFileDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-13T10:00:59.373Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 32,
-              "Title": "UserLoginDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\UserLoginDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\UserLoginDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\UserLoginDto.cs",
-              "RelativeToolTip": "API\\DTOs\\UserLoginDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T02:02:50.4Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 33,
-              "Title": "UserDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\UserDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\UserDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\UserDto.cs",
-              "RelativeToolTip": "API\\DTOs\\UserDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T02:00:09.269Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 34,
-              "Title": "UpdateUserDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\UpdateUserDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\UpdateUserDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\UpdateUserDto.cs",
-              "RelativeToolTip": "API\\DTOs\\UpdateUserDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T02:01:51.083Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 35,
-              "Title": "UpdateMessageDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\UpdateMessageDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\UpdateMessageDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\UpdateMessageDto.cs",
-              "RelativeToolTip": "API\\DTOs\\UpdateMessageDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T02:02:52.744Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 36,
-              "Title": "SetNicknameDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\SetNicknameDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\SetNicknameDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\SetNicknameDto.cs",
-              "RelativeToolTip": "API\\DTOs\\SetNicknameDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T12:08:51.417Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 37,
-              "Title": "ConversationDto.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\ConversationDto.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\ConversationDto.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\DTOs\\ConversationDto.cs",
-              "RelativeToolTip": "API\\DTOs\\ConversationDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAASAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T02:06:30.556Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 38,
-              "Title": "ITokenService.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Interfaces\\ITokenService.cs",
-              "RelativeDocumentMoniker": "API\\Interfaces\\ITokenService.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Interfaces\\ITokenService.cs",
-              "RelativeToolTip": "API\\Interfaces\\ITokenService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T02:48:13.514Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 39,
-              "Title": "ActivityTrackerMiddleware.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Middleware\\ActivityTrackerMiddleware.cs",
-              "RelativeDocumentMoniker": "API\\Middleware\\ActivityTrackerMiddleware.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Middleware\\ActivityTrackerMiddleware.cs",
-              "RelativeToolTip": "API\\Middleware\\ActivityTrackerMiddleware.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T02:17:12.715Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 40,
-              "Title": "20251012015625_DeleteAtConversation.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Data\\Migrations\\20251012015625_DeleteAtConversation.cs",
-              "RelativeDocumentMoniker": "API\\Data\\Migrations\\20251012015625_DeleteAtConversation.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Data\\Migrations\\20251012015625_DeleteAtConversation.cs",
-              "RelativeToolTip": "API\\Data\\Migrations\\20251012015625_DeleteAtConversation.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T01:56:29.561Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 41,
-              "Title": "20251012012650_DeleteConversation.cs",
-              "DocumentMoniker": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Data\\Migrations\\20251012012650_DeleteConversation.cs",
-              "RelativeDocumentMoniker": "API\\Data\\Migrations\\20251012012650_DeleteConversation.cs",
-              "ToolTip": "C:\\Users\\hoiph\\OneDrive\\T\u00E0i li\u1EC7u\\GitHub\\ChatApp\\API\\API\\Data\\Migrations\\20251012012650_DeleteConversation.cs",
-              "RelativeToolTip": "API\\Data\\Migrations\\20251012012650_DeleteConversation.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T01:55:51.665Z"
+              "WhenOpened": "2025-10-15T05:30:44.704Z"
             }
           ]
         }

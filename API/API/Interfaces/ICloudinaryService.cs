@@ -1,16 +1,20 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace API.Interfaces
+namespace API.Services
 {
-    public interface ICloudinaryService
+    public class CloudinaryUploadResult
     {
-        Task<double?> GetAudioDurationAsync(IFormFile audioFile);
-        Task<string> UploadFileAsync(IFormFile file, string folder);
+        public string Url { get; set; } = string.Empty;
+        public string PublicId { get; set; } = string.Empty;
+        public string Format { get; set; } = string.Empty;
+        public string ResourceType { get; set; } = string.Empty;
+        public long Bytes { get; set; }
     }
 
+    public interface ICloudinaryService
+    {
+        Task<CloudinaryUploadResult> UploadFileAsync(IFormFile file);
+        Task<bool> DeleteFileAsync(string publicId);
+    }
 }

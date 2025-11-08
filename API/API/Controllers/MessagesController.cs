@@ -1,743 +1,530 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entities;
-using API.Interfaces;
+using API.SignaIR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace API.Controllers
-{   
+{
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
     public class MessagesController : ControllerBase
     {
-        private readonly IMessageService _messageService;
-        private readonly ICloudinaryService _cloudinaryService;
-        private readonly DataContext _db;
+        private readonly DataContext _context;
+        private readonly IHubContext<ChatHub> _hubContext;
 
-        public MessagesController(IMessageService messageService, ICloudinaryService cloudinaryService, DataContext db)
+        public MessagesController(DataContext context, IHubContext<ChatHub> hubContext)
         {
-            _messageService = messageService;
-            _cloudinaryService = cloudinaryService;
-            _db = db;
+            _context = context;
+            _hubContext = hubContext;
         }
-        private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-
-        [HttpPost]
-        public async Task<IActionResult> SendMessage([FromForm] CreateMessageDto dto)
+        [HttpGet("conversation/{conversationId}")]
+        public async Task<IActionResult> GetMessages(int conversationId, [FromQuery] int page = 1, [FromQuery] int pageSize = 50)
         {
-            if (dto.ConversationId <= 0)
-                return BadRequest("Phải có ConversationId cho tin nhắn riêng.");
-            
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // Tìm hoặc tạo cuộc trò chuyện
-            var conversation = await _db.Conversations
-                .Include(c => c.BlockedUsers)
-                .Include(c => c.User1)
-                .Include(c => c.User2)
-                .FirstOrDefaultAsync(c => c.Id == dto.ConversationId);
-
-            // Xác định người nhận trong cuộc trò chuyện
-            int receiverId;
-
-            if (conversation != null)
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
             {
-                receiverId = conversation.User1Id == CurrentUserId
-                    ? conversation.User2Id
-                    : conversation.User1Id;
-            }
-            else
-            {
-                return BadRequest("Thiếu ReceiverId khi tạo cuộc trò chuyện mới.");
+                return Unauthorized(new { message = "Invalid user id" });
             }
 
-            if (conversation == null)
+            var participant = await _context.ConversationParticipants
+                .FirstOrDefaultAsync(cp => cp.ConversationId == conversationId && cp.UserId == userId);
+
+            if (participant == null)
             {
-                var receiver = await _db.Users.FindAsync(receiverId);
-                if (receiver == null)
-                    return BadRequest("Người nhận không tồn tại.");
-
-                conversation = new Conversation
-                {
-                    User1Id = CurrentUserId,
-                    User2Id = receiverId,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                    ConversationName = receiver.FullName
-                };
-
-                _db.Conversations.Add(conversation);
-                await _db.SaveChangesAsync();
+                return Forbid();
             }
 
-            if (conversation.BlockedUsers.Any(b => b.BlockedUserId == CurrentUserId))
-                return BadRequest("Bạn không thể gửi tin nhắn vì bạn đã bị chặn.");
-            // Sau khi tìm hoặc tạo Conversation
-            if (conversation.User1Id == CurrentUserId && conversation.User1Deleted)
+            var messages = await _context.Messages
+    .Where(m => m.ConversationId == conversationId && !m.IsDeleted)
+    .Include(m => m.Sender)
+    .Include(m => m.ReadReceipts)
+    .Include(m => m.Reactions)
+        .ThenInclude(r => r.User)
+    .Include(m => m.ReplyToMessage)
+        .ThenInclude(rt => rt.Sender)
+    .OrderByDescending(m => m.CreatedAt)
+    .Skip((page - 1) * pageSize)
+    .Take(pageSize)
+    .Select(m => new MessageResponseDto
+    {
+        Id = m.Id,
+        ConversationId = m.ConversationId,
+        SenderId = m.SenderId,
+        SenderName = m.Sender.Name,
+        SenderAvatar = m.Sender.Avatar,
+        Content = m.Content,
+        MessageType = m.MessageType,
+        FileUrl = m.FileUrl,
+        FileName = m.FileName,
+        FileSize = m.FileSize,
+        ThumbnailUrl = m.ThumbnailUrl,
+        Duration = m.Duration,
+        CreatedAt = m.CreatedAt,
+        IsEdited = m.IsEdited,
+        EditedAt = m.UpdatedAt,
+        IsPinned = _context.PinnedMessages.Any(pm => pm.MessageId == m.Id),
+        ReplyToMessageId = m.ReplyToMessageId,
+        ReplyToMessage = m.ReplyToMessage != null
+            ? new MessageResponseDto
             {
-                conversation.User1Deleted = false;
-                conversation.DeletedAtUser1 = null;
+                Id = m.ReplyToMessage.Id,
+                Content = m.ReplyToMessage.Content,
+                MessageType = m.ReplyToMessage.MessageType,
+                SenderId = m.ReplyToMessage.SenderId,
+                SenderName = m.ReplyToMessage.Sender.Name,
+                SenderAvatar = m.ReplyToMessage.Sender.Avatar
+            }
+            : null,
+        ReadReceipts = m.ReadReceipts.Select(rr => new ReadReceiptResponseDto
+        {
+            UserId = rr.UserId,
+            ReadAt = rr.ReadAt
+        }).ToList(),
+        Reactions = m.Reactions.Select(r => new ReactionResponseDto
+        {
+            Id = r.Id,
+            Emoji = r.Emoji,
+            UserId = r.UserId,
+            Username = r.User.Name,
+            CreatedAt = r.CreatedAt
+        }).ToList()
+    })
+    .ToListAsync();
+
+            messages.Reverse();
+
+            return Ok(messages);
+        }
+
+        [HttpPost("send")]
+        public async Task<IActionResult> SendMessage([FromBody] CreateMessageDto dto)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user id" });
+
+            var participant = await _context.ConversationParticipants
+                .FirstOrDefaultAsync(cp => cp.ConversationId == dto.ConversationId && cp.UserId == userId);
+
+            if (participant == null)
+                return Forbid();
+
+            // Nếu reply, kiểm tra message gốc có tồn tại
+            int? replyToMessageId = null;
+            if (dto.ReplyToMessageId.HasValue)
+            {
+                var parentExists = await _context.Messages
+                    .AnyAsync(m => m.Id == dto.ReplyToMessageId.Value);
+                if (parentExists)
+                    replyToMessageId = dto.ReplyToMessageId;
+                // Nếu không tồn tại, để null (không lỗi)
             }
 
-            if (conversation.User2Id == CurrentUserId && conversation.User2Deleted)
-            {
-                conversation.User2Deleted = false;
-                conversation.DeletedAtUser2 = null;
-            }
-
-            // Tạo tin nhắn
             var message = new Message
             {
-                SenderId = CurrentUserId,
-                ReceiverId = receiverId,
+                ConversationId = dto.ConversationId,
+                SenderId = userId,
                 Content = dto.Content,
                 MessageType = dto.MessageType,
+                FileUrl = dto.FileUrl,
+                FileName = dto.FileName,
+                FileSize = dto.FileSize,
+                ThumbnailUrl = dto.ThumbnailUrl,
+                Duration = dto.Duration,
+                ReplyToMessageId = replyToMessageId, // <-- gán nullable
                 CreatedAt = DateTime.UtcNow,
-                ConversationId = conversation.Id
+                IsDeleted = false,
+                IsEdited = false
             };
 
-            var savedMessage = await _messageService.CreateMessageAsync(message);
+            _context.Messages.Add(message);
+            await _context.SaveChangesAsync();
 
-            // Upload file (nếu có)
-            if (dto.Files != null && dto.Files.Any())
+            var sender = await _context.Users.FindAsync(userId);
+
+            var messageResponse = new MessageResponseDto
             {
-                foreach (var file in dto.Files)
-                {
-                    string folder = dto.MessageType switch
-                    {
-                        "image" => "chat_images",
-                        "voice" => "chat_voices",
-                        _ => "chat_files"
-                    };
-
-                    var fileUrl = await _cloudinaryService.UploadFileAsync(file, folder);
-
-                    _db.MessageFiles.Add(new MessageFile
-                    {
-                        MessageId = savedMessage.Id,
-                        FileUrl = fileUrl,
-                        FileType = dto.MessageType,
-                        FileName = file.FileName
-                    });
-                }
-                await _db.SaveChangesAsync();
-            }
-
-            // Kết quả
-            var resultDto = new MessageDto
-            {
-                Id = savedMessage.Id,
-                ConversationId = conversation.Id,
-                SenderId = savedMessage.SenderId,
-                SenderUserName = User.Identity?.Name ?? string.Empty,
-                ReceiverId = savedMessage.ReceiverId,
-                Content = savedMessage.Content,
-                MessageType = savedMessage.MessageType,
-                IsRead = savedMessage.IsRead,
-                CreatedAt = savedMessage.CreatedAt,
-                Files = await _db.MessageFiles
-                    .Where(f => f.MessageId == savedMessage.Id)
-                    .Select(f => new MessageFileDto
-                    {
-                        FileUrl = f.FileUrl,
-                        FileType = f.FileType,
-                        FileName = f.FileName
-                    }).ToListAsync()
-            };
-
-            return CreatedAtAction(nameof(GetMessage), new { id = savedMessage.Id }, resultDto);
-        }
-
-        [HttpPost("reply")]
-        public async Task<IActionResult> ReplyMessage([FromForm] ReplyMessageDto dto)
-        {
-            if (!dto.ReplyToMessageId.HasValue)
-                return BadRequest("Thiếu ID tin nhắn cần trả lời.");
-
-            var repliedMsg = await _db.Messages
-                .Include(m => m.Sender)
-                .FirstOrDefaultAsync(m => m.Id == dto.ReplyToMessageId);
-
-            if (repliedMsg == null)
-                return NotFound("Tin nhắn được trả lời không tồn tại.");
-
-            // Lấy conversation hiện tại
-            var conversation = await _db.Conversations
-                .Include(c => c.BlockedUsers)
-                .FirstOrDefaultAsync(c => c.Id == repliedMsg.ConversationId);
-
-            if (conversation == null)
-                return NotFound("Cuộc trò chuyện không tồn tại.");
-
-            if (conversation.BlockedUsers.Any(b => b.BlockedUserId == CurrentUserId))
-                return BadRequest("Bạn không thể gửi tin nhắn vì bạn đã bị chặn.");
-
-            // Tạo tin nhắn trả lời
-            var message = new Message
-            {
-                SenderId = CurrentUserId,
-                ReceiverId = repliedMsg.SenderId == CurrentUserId ? repliedMsg.ReceiverId : repliedMsg.SenderId,
-                Content = dto.Content,
-                MessageType = dto.MessageType,
-                CreatedAt = DateTime.UtcNow,
-                ConversationId = conversation.Id,
-                ReplyToMessageId = dto.ReplyToMessageId
-            };
-
-            var savedMessage = await _messageService.CreateMessageAsync(message);
-
-            // Upload file (nếu có)
-            if (dto.Files != null && dto.Files.Any())
-            {
-                foreach (var file in dto.Files)
-                {
-                    string folder = dto.MessageType switch
-                    {
-                        "image" => "chat_images",
-                        "voice" => "chat_voices",
-                        _ => "chat_files"
-                    };
-
-                    var fileUrl = await _cloudinaryService.UploadFileAsync(file, folder);
-
-                    _db.MessageFiles.Add(new MessageFile
-                    {
-                        MessageId = savedMessage.Id,
-                        FileUrl = fileUrl,
-                        FileType = dto.MessageType,
-                        FileName = file.FileName
-                    });
-                }
-                await _db.SaveChangesAsync();
-            }
-
-            // Tạo DTO trả về
-            var resultDto = new MessageDto
-            {
-                Id = savedMessage.Id,
-                ConversationId = conversation.Id,
-                SenderId = savedMessage.SenderId,
-                SenderUserName = User.Identity?.Name ?? string.Empty,
-                ReceiverId = savedMessage.ReceiverId,
-                Content = savedMessage.Content,
-                MessageType = savedMessage.MessageType,
-                IsRead = savedMessage.IsRead,
-                CreatedAt = savedMessage.CreatedAt,
-                ReplyToMessageId = repliedMsg.Id,
-                ReplyContent = repliedMsg.Content,
-                ReplySenderName = repliedMsg.Sender.FullName,
-                Files = await _db.MessageFiles
-                    .Where(f => f.MessageId == savedMessage.Id)
-                    .Select(f => new MessageFileDto
-                    {
-                        FileUrl = f.FileUrl,
-                        FileType = f.FileType,
-                        FileName = f.FileName
-                    }).ToListAsync()
-            };
-
-            return CreatedAtAction(nameof(GetMessage), new { id = savedMessage.Id }, resultDto);
-        }
-
-        // =======================================
-        // Gửi âm thanh
-        // =======================================
-        [HttpPost("send-voice")]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> SendVoiceMessage([FromForm] VoiceMessageDto dto)
-        {
-            int senderId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-            if (dto.AudioFile == null || dto.AudioFile.Length == 0)
-                return BadRequest("Không có file âm thanh hợp lệ.");
-
-            if (dto.ConversationId <= 0)
-                return BadRequest("Vui lòng cung cấp ConversationId hợp lệ.");
-
-            // 🔹 Tìm cuộc trò chuyện
-            var conversation = await _db.Conversations
-                .Include(c => c.BlockedUsers)
-                .Include(c => c.User1)
-                .Include(c => c.User2)
-                .FirstOrDefaultAsync(c => c.Id == dto.ConversationId);
-
-            if (conversation == null)
-                return BadRequest("Cuộc trò chuyện không tồn tại.");
-
-            // 🔹 Xác định người nhận
-            int receiverId = conversation.User1Id == senderId
-                ? conversation.User2Id
-                : conversation.User1Id;
-
-            // 🔹 Kiểm tra chặn
-            if (conversation.BlockedUsers.Any(b => b.BlockedUserId == senderId))
-                return BadRequest("Bạn không thể gửi tin nhắn vì bạn đã bị chặn.");
-
-            // 🔹 Upload file âm thanh
-            var audioUrl = await _cloudinaryService.UploadFileAsync(dto.AudioFile, "chat_voices");
-            var voiceDuration = await _cloudinaryService.GetAudioDurationAsync(dto.AudioFile);
-
-            // 🔹 Tạo tin nhắn mới
-            var message = new Message
-            {
-                SenderId = senderId,
-                ReceiverId = receiverId,
-                MessageType = "voice",
-                VoiceUrl = audioUrl,
-                VoiceDuration = voiceDuration,
-                CreatedAt = DateTime.UtcNow,
-                IsRead = false,
+                Id = message.Id,
+                ConversationId = message.ConversationId,
+                SenderId = message.SenderId,
+                SenderName = sender!.Name,
+                SenderAvatar = sender.Avatar,
+                Content = message.Content,
+                MessageType = message.MessageType,
+                FileUrl = message.FileUrl,
+                FileName = message.FileName,
+                FileSize = message.FileSize,
+                ThumbnailUrl = message.ThumbnailUrl,
+                Duration = message.Duration,
+                CreatedAt = message.CreatedAt,
+                IsEdited = false,
                 IsPinned = false,
-                ConversationId = conversation.Id
+                ReplyToMessageId = message.ReplyToMessageId,
+                ReadReceipts = new List<ReadReceiptResponseDto>(),
+                Reactions = new List<ReactionResponseDto>()
             };
 
-            var saved = await _messageService.CreateMessageAsync(message);
-
-            _db.MessageFiles.Add(new MessageFile
-            {
-                MessageId = saved.Id,
-                FileUrl = audioUrl,
-                FileType = "voice",
-                FileName = dto.AudioFile.FileName
-            });
-
-            // 🔹 Cập nhật thời gian hoạt động cuộc trò chuyện
-            conversation.UpdatedAt = DateTime.UtcNow;
-            await _db.SaveChangesAsync();
-
-            // 🔹 Trả kết quả
-            return Ok(new
-            {
-                saved.Id,
-                SenderId = senderId,
-                ReceiverId = receiverId,
-                AudioUrl = audioUrl,
-                VoiceDuration = voiceDuration,
-                FileName = dto.AudioFile.FileName,
-                message.CreatedAt,
-                message.MessageType,
-                ConversationId = conversation.Id
-            });
-        }
-
-
-        // =======================================
-        // Gửi vị trí
-        // =======================================
-        [HttpPost("send-location")]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> SendLocation([FromForm] LocationMessageDto dto)
-        {
-            int senderId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-            if (dto.ConversationId <= 0)
-                return BadRequest("Vui lòng cung cấp ConversationId hợp lệ.");
-            if (dto.Latitude == 0 && dto.Longitude == 0)
-                return BadRequest("Vui lòng cung cấp tọa độ hợp lệ.");
-
-            // 🔹 Tìm cuộc trò chuyện
-            var conversation = await _db.Conversations
-                .Include(c => c.BlockedUsers)
-                .Include(c => c.User1)
-                .Include(c => c.User2)
-                .FirstOrDefaultAsync(c => c.Id == dto.ConversationId);
-
-            if (conversation == null)
-                return BadRequest("Cuộc trò chuyện không tồn tại.");
-
-            // 🔹 Xác định người nhận
-            int receiverId = conversation.User1Id == senderId
-                ? conversation.User2Id
-                : conversation.User1Id;
-
-            // 🔹 Kiểm tra block
-            if (conversation.BlockedUsers.Any(b => b.BlockedUserId == senderId))
-                return BadRequest("Bạn không thể gửi tin nhắn vì bạn đã bị chặn.");
-
-            // 🔹 Tạo tin nhắn dạng "location"
-            var message = new Message
-            {
-                SenderId = senderId,
-                ReceiverId = receiverId,
-                MessageType = "location",
-                Content = $"Vị trí hiện tại: ({dto.Latitude}, {dto.Longitude})",
-                CreatedAt = DateTime.UtcNow,
-                IsRead = false,
-                IsPinned = false,
-                ConversationId = conversation.Id
-            };
-
-            var saved = await _messageService.CreateMessageAsync(message);
-
-            // 🔹 Cập nhật thời gian cập nhật cuộc trò chuyện
-            conversation.UpdatedAt = DateTime.UtcNow;
-            await _db.SaveChangesAsync();
-
-            // 🔹 Trả kết quả
-            return Ok(new
-            {
-                saved.Id,
-                SenderId = senderId,
-                ReceiverId = receiverId,
-                dto.Latitude,
-                dto.Longitude,
-                GoogleMapsUrl = $"https://www.google.com/maps?q={dto.Latitude},{dto.Longitude}",
-                message.CreatedAt,
-                message.MessageType,
-                ConversationId = conversation.Id
-            });
-        }
-
-        // =============================
-        // Chuyển tiếp tin nhắn
-        // =============================
-        [HttpPost("forward")]
-        public async Task<IActionResult> ForwardMessage([FromBody] ForwardMessageDto dto)
-        {
-            int senderId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-            if (dto.ConversationIds == null || !dto.ConversationIds.Any())
-                return BadRequest("Vui lòng cung cấp danh sách ConversationId hợp lệ.");
-
-            // 🔹 Lấy tin nhắn gốc
-            var original = await _db.Messages
-                .Include(m => m.MessageFiles)
-                .Include(m => m.Sender)
-                .FirstOrDefaultAsync(m => m.Id == dto.OriginalMessageId);
-
-            if (original == null)
-                return NotFound("Tin nhắn gốc không tồn tại.");
-
-            var results = new List<object>();
-
-            foreach (var conversationId in dto.ConversationIds.Distinct())
-            {
-                // 🔹 Tìm cuộc trò chuyện
-                var conversation = await _db.Conversations
-                    .Include(c => c.BlockedUsers)
-                    .Include(c => c.User1)
-                    .Include(c => c.User2)
-                    .FirstOrDefaultAsync(c => c.Id == conversationId);
-
-                if (conversation == null)
-                {
-                    results.Add(new { ConversationId = conversationId, Status = "Cuộc trò chuyện không tồn tại" });
-                    continue;
-                }
-
-                // 🔹 Xác định người nhận
-                int receiverId = conversation.User1Id == senderId
-                    ? conversation.User2Id
-                    : conversation.User1Id;
-
-                // 🔹 Kiểm tra block
-                if (conversation.BlockedUsers.Any(b => b.BlockedUserId == senderId))
-                {
-                    results.Add(new { ConversationId = conversationId, Status = "Bạn bị chặn, không thể gửi" });
-                    continue;
-                }
-
-                // 🔹 Tạo tin nhắn chuyển tiếp
-                var forwarded = new Message
-                {
-                    SenderId = senderId,
-                    ReceiverId = receiverId,
-                    ConversationId = conversation.Id,
-                    ForwardedFromId = original.SenderId,
-                    ForwardedFrom = original.Sender,
-                    Content = original.Content,
-                    MessageType = original.MessageType,
-                    FileUrl = original.FileUrl,
-                    VoiceUrl = original.VoiceUrl,
-                    VoiceDuration = original.VoiceDuration,
-                    Latitude = original.Latitude,
-                    Longitude = original.Longitude,
-                    CreatedAt = DateTime.UtcNow,
-                    IsRead = false,
-                    IsPinned = false
-                };
-
-                var saved = await _messageService.CreateMessageAsync(forwarded);
-
-                // 🔹 Sao chép file đính kèm (nếu có)
-                if (original.MessageFiles != null && original.MessageFiles.Any())
-                {
-                    foreach (var file in original.MessageFiles)
-                    {
-                        _db.MessageFiles.Add(new MessageFile
-                        {
-                            MessageId = saved.Id,
-                            FileUrl = file.FileUrl,
-                            FileType = file.FileType,
-                            FileName = file.FileName
-                        });
-                    }
-                }
-
-                // 🔹 Cập nhật thời gian hội thoại
-                conversation.UpdatedAt = DateTime.UtcNow;
-
-                results.Add(new
-                {
-                    ConversationId = conversation.Id,
-                    ReceiverId = receiverId,
-                    Status = "Đã gửi thành công",
-                    MessageId = saved.Id
-                });
-            }
-
-            await _db.SaveChangesAsync();
-
-            return Ok(results);
-        }
-
-
-        // =============================
-        // Lấy tin nhắn theo ID
-        // =============================
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetMessage(int id)
-        {
-            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-            var msg = await _db.Messages.FindAsync(id);
-            if (msg == null) return NotFound();
-
-            bool deleted = await _db.MessageDeletions
-                .AnyAsync(md => md.UserId == userId && md.MessageId == id);
-            if (deleted) return NotFound();
-
-            var files = await _db.MessageFiles
-                .Where(f => f.MessageId == id)
-                .Select(f => new MessageFileDto
-                {
-                    FileUrl = f.FileUrl,
-                    FileType = f.FileType,
-                    FileName = f.FileName
-                }).ToListAsync();
-
-            var senderUser = await _db.Users.FindAsync(msg.SenderId);
-            var forwardedFrom = msg.ForwardedFromId != null
-                ? await _db.Users.FindAsync(msg.ForwardedFromId)
-                : null;
-
-            return Ok(new MessageDto
-            {
-                Id = msg.Id,
-                SenderId = msg.SenderId,
-                SenderUserName = senderUser?.Email ?? string.Empty,
-                ReceiverId = msg.ReceiverId,
-                Content = msg.Content,
-                MessageType = msg.MessageType,
-                VoiceUrl = msg.VoiceUrl,
-                VoiceDuration = msg.VoiceDuration,
-                IsRead = msg.IsRead,
-                CreatedAt = msg.CreatedAt,
-                Files = files,
-                ForwardedFromId = msg.ForwardedFromId,
-                ForwardedFrom = forwardedFrom?.FullName
-            });
-        }
-
-        // =============================
-        // Lấy tin nhắn đã ghim
-        // =============================
-        [HttpGet("pinned")]
-        public async Task<IActionResult> GetPinnedMessages()
-        {
-            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-            var pinned = await _db.Messages
-                .Where(m => m.IsPinned && (m.SenderId == userId || m.ReceiverId == userId))
-                .OrderByDescending(m => m.CreatedAt)
-                .Select(m => new MessageDto
-                {
-                    Id = m.Id,
-                    SenderId = m.SenderId,
-                    SenderUserName = _db.Users.FirstOrDefault(u => u.Id == m.SenderId)!.Email,
-                    ReceiverId = m.ReceiverId,
-                    Content = m.Content,
-                    VoiceUrl = m.VoiceUrl,
-                    VoiceDuration = m.VoiceDuration,
-                    MessageType = m.MessageType,
-                    IsRead = m.IsRead,
-                    CreatedAt = m.CreatedAt
-                }).ToListAsync();
-
-            return Ok(pinned);
-        }
-
-        // =======================================
-        // Lấy lịch sử sửa tin nhắn
-        // =======================================
-        [HttpGet("{id}/history")]
-        public async Task<IActionResult> GetEditHistory(int id)
-        {
-            var history = await _db.MessageEditHistories
-                .Where(h => h.MessageId == id)
-                .OrderByDescending(h => h.EditedAt)
-                .Select(h => new
-                {
-                    h.OldContent,
-                    h.NewContent,
-                    h.EditedAt
-                })
+            var participantIds = await _context.ConversationParticipants
+                .Where(cp => cp.ConversationId == dto.ConversationId)
+                .Select(cp => cp.UserId.ToString())
                 .ToListAsync();
 
-            if (!history.Any())
-                return NotFound("Tin nhắn chưa từng được sửa.");
-
-            return Ok(history);
+            var senderId = message.SenderId.ToString();
+            var recipients = participantIds.Where(id => id != senderId).ToList();
+            await _hubContext.Clients.Users(recipients).SendAsync("NewMessage", messageResponse);
+            await _hubContext.Clients.Users(participantIds)
+                .SendAsync("ConversationUpdated", new
+        {
+            conversationId = message.ConversationId,
+            lastMessage = message.Content,
+            lastMessageTime = message.CreatedAt,
+            senderId = message.SenderId,
+            senderName = sender.Name,
+            senderAvatar = sender.Avatar
+        });
+            return Ok(messageResponse);
         }
 
-        // =============================
-        // Ghim / Hủy ghim tin nhắn
-        // =============================
-        [HttpPut("pin/{id}")]
-        public async Task<IActionResult> PinMessage(int id)
+        [HttpPut("{messageId}/edit")]
+        public async Task<IActionResult> EditMessage(int messageId, [FromBody] EditMessageDto dto)
         {
-            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var msg = await _db.Messages.FindAsync(id);
-            if (msg == null) return NotFound("Tin nhắn không tồn tại.");
-            if (msg.SenderId != userId && msg.ReceiverId != userId)
-                return Forbid("Không có quyền ghim tin nhắn này.");
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            msg.IsPinned = true;
-            await _db.SaveChangesAsync();
-            return Ok("Đã ghim tin nhắn.");
-        }
-
-        [HttpPut("unpin/{id}")]
-        public async Task<IActionResult> UnpinMessage(int id)
-        {
-            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var msg = await _db.Messages.FindAsync(id);
-            if (msg == null) return NotFound("Tin nhắn không tồn tại.");
-            if (msg.SenderId != userId && msg.ReceiverId != userId)
-                return Forbid("Không có quyền hủy ghim tin nhắn này.");
-
-            msg.IsPinned = false;
-            await _db.SaveChangesAsync();
-            return Ok("Đã hủy ghim tin nhắn.");
-        }
-
-        // =============================
-        // Sửa tin nhắn & lưu lịch sử
-        // =============================
-        [HttpPut("{id}")]
-        public async Task<IActionResult> EditMessage(int id, [FromBody] UpdateMessageDto dto)
-        {
-            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var msg = await _db.Messages.FirstOrDefaultAsync(m => m.Id == id);
-            if (msg == null) return NotFound("Tin nhắn không tồn tại.");
-            if (msg.SenderId != userId) return Forbid("Chỉ người gửi được sửa tin nhắn.");
-            if ((DateTime.UtcNow - msg.CreatedAt).TotalMinutes > 15)
-                return BadRequest("Chỉ được sửa trong vòng 15 phút.");
-
-            _db.MessageEditHistories.Add(new MessageEditHistory
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
             {
-                MessageId = msg.Id,
-                OldContent = msg.Content,
-                NewContent = dto.Content,
-                EditedAt = DateTime.UtcNow
-            });
+                return Unauthorized(new { message = "Invalid user id" });
+            }
 
-            msg.Content = dto.Content;
-            msg.EditedAt = DateTime.UtcNow;
+            var message = await _context.Messages.FindAsync(messageId);
 
-            await _db.SaveChangesAsync();
-
-            return Ok(new
+            if (message == null || message.IsDeleted)
             {
-                msg.Id,
-                msg.Content,
-                msg.EditedAt
-            });
+                return NotFound(new { message = "Message not found" });
+            }
+
+            if (message.SenderId != userId)
+            {
+                return Forbid();
+            }
+
+            var editHistory = new MessageEditHistory
+            {
+                MessageId = messageId,
+                PreviousContent = message.Content,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            _context.MessageEditHistories.Add(editHistory);
+
+            message.Content = dto.NewContent;
+            message.IsEdited = true;
+            message.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            var participantIds = await _context.ConversationParticipants
+                .Where(cp => cp.ConversationId == message.ConversationId)
+                .Select(cp => cp.UserId.ToString())
+                .ToListAsync();
+
+            await _hubContext.Clients.Users(participantIds)
+                .SendAsync("MessageEdited", new { messageId, newContent = dto.NewContent, editedAt = message.UpdatedAt });
+
+            return Ok(new { message = "Message edited successfully" });
         }
 
-        // =============================
-        // Thu hồi tin nhắn
-        // =============================
-        [HttpDelete("recall/{id}")]
-        public async Task<IActionResult> RecallMessage(int id)
+        [HttpDelete("{messageId}/recall")]
+        public async Task<IActionResult> RecallMessage(int messageId)
         {
-            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var message = await _db.Messages.FirstOrDefaultAsync(m => m.Id == id);
-            if (message == null) return NotFound("Tin nhắn không tồn tại.");
-            if (message.SenderId != userId) return Forbid("Bạn chỉ có thể thu hồi tin nhắn của mình.");
-            if ((DateTime.UtcNow - message.CreatedAt).TotalMinutes > 10)
-                return BadRequest("Bạn chỉ có thể thu hồi tin nhắn trong vòng 10 phút.");
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid user id" });
+            }
 
-            _db.Messages.Remove(message);
-            await _db.SaveChangesAsync();
+            var message = await _context.Messages.FindAsync(messageId);
 
-            return Ok("Tin nhắn đã được thu hồi (mọi người đều không thấy nữa).");
+            if (message == null || message.IsDeleted)
+            {
+                return NotFound(new { message = "Message not found" });
+            }
+
+            if (message.SenderId != userId)
+            {
+                return Forbid();
+            }
+
+            message.IsDeleted = true;
+            message.Content = "Message was recalled";
+            await _context.SaveChangesAsync();
+
+            var participantIds = await _context.ConversationParticipants
+                .Where(cp => cp.ConversationId == message.ConversationId)
+                .Select(cp => cp.UserId.ToString())
+                .ToListAsync();
+
+            await _hubContext.Clients.Users(participantIds)
+                .SendAsync("MessageRecalled", new { messageId });
+
+            return Ok(new { message = "Message recalled successfully" });
         }
 
-        // =============================
-        // Xóa tin nhắn cục bộ
-        // =============================
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMessage(int id)
+        [HttpPost("{messageId}/react")]
+        public async Task<IActionResult> ReactToMessage(int messageId, [FromBody] ReactDto dto)
         {
-            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var message = await _db.Messages.FindAsync(id);
-            if (message == null) return NotFound("Tin nhắn không tồn tại.");
-
-            bool alreadyDeleted = await _db.MessageDeletions
-                .AnyAsync(md => md.MessageId == id && md.UserId == userId);
-
-            if (alreadyDeleted) return BadRequest("Bạn đã xóa tin nhắn này rồi.");
-
-            _db.MessageDeletions.Add(new MessageDeletion
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
             {
-                MessageId = id,
-                UserId = userId
-            });
-            await _db.SaveChangesAsync();
+                return Unauthorized(new { message = "Invalid user id" });
+            }
 
-            return Ok("Tin nhắn đã được xóa (chỉ bạn không thấy nữa).");
-        }
+            var message = await _context.Messages
+                .Include(m => m.Conversation)
+                    .ThenInclude(c => c.Participants)
+                .FirstOrDefaultAsync(m => m.Id == messageId);
 
-        [HttpPost("{messageId}/reaction")]
-        public async Task<IActionResult> AddReaction(int messageId, [FromQuery] string reactionType = "like")
-        {
-            var userIdClaim = User.FindFirst("nameid")?.Value
-                ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null) return Unauthorized();
-
-            int userId = int.Parse(userIdClaim);
-
-            var message = await _db.Messages.FindAsync(messageId);
-            if (message == null) return NotFound("Message not found");
-
-            var existing = await _db.MessageReactions
-                .FirstOrDefaultAsync(r => r.MessageId == messageId && r.UserId == userId);
-
-            if (existing != null)
+            if (message == null || message.IsDeleted)
             {
-                existing.ReactionType = reactionType;
-                await _db.SaveChangesAsync();
-                return Ok(new { message = "Reaction updated" });
+                return NotFound(new { message = "Message not found" });
+            }
+
+            if (!message.Conversation.Participants.Any(p => p.UserId == userId))
+            {
+                return Forbid();
+            }
+
+            var existingReaction = await _context.MessageReactions
+                .FirstOrDefaultAsync(r => r.MessageId == messageId && r.UserId == userId && r.Emoji == dto.Emoji);
+
+            if (existingReaction != null)
+            {
+                _context.MessageReactions.Remove(existingReaction);
+                await _context.SaveChangesAsync();
+
+                var participantIds = message.Conversation.Participants.Select(p => p.UserId.ToString()).ToList();
+                await _hubContext.Clients.Users(participantIds)
+                    .SendAsync("ReactionRemoved", new { messageId, userId, emoji = dto.Emoji });
+
+                return Ok(new { message = "Reaction removed" });
             }
 
             var reaction = new MessageReaction
             {
-                UserId = userId,
                 MessageId = messageId,
-                ReactionType = reactionType
+                UserId = userId,
+                Emoji = dto.Emoji,
+                CreatedAt = DateTime.UtcNow
             };
 
-            _db.MessageReactions.Add(reaction);
-            await _db.SaveChangesAsync();
+            _context.MessageReactions.Add(reaction);
+            await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Reaction added" });
+            var user = await _context.Users.FindAsync(userId);
+
+            var participantIdsForReaction = message.Conversation.Participants.Select(p => p.UserId.ToString()).ToList();
+            await _hubContext.Clients.Users(participantIdsForReaction)
+                .SendAsync("ReactionAdded", new
+                {
+                    messageId,
+                    reaction = new ReactionResponseDto
+                    {
+                        Id = reaction.Id,
+                        Emoji = reaction.Emoji,
+                        UserId = userId,
+                        Username = user!.Name,
+                        CreatedAt = reaction.CreatedAt
+                    }
+                });
+
+            return Ok(new { message = "Reaction added successfully" });
+        }
+
+        [HttpPost("forward")]
+        public async Task<IActionResult> ForwardMessage([FromBody] ForwardDto dto)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid user id" });
+            }
+
+            var originalMessage = await _context.Messages.FindAsync(dto.MessageId);
+
+            if (originalMessage == null || originalMessage.IsDeleted)
+            {
+                return NotFound(new { message = "Original message not found" });
+            }
+
+            foreach (var conversationId in dto.TargetConversationIds)
+            {
+                var participant = await _context.ConversationParticipants
+                    .FirstOrDefaultAsync(cp => cp.ConversationId == conversationId && cp.UserId == userId);
+
+                if (participant == null)
+                {
+                    continue;
+                }
+
+                var forwardedMessage = new Message
+                {
+                    ConversationId = conversationId,
+                    SenderId = userId,
+                    Content = originalMessage.Content,
+                    MessageType = originalMessage.MessageType,
+                    FileUrl = originalMessage.FileUrl,
+                    FileName = originalMessage.FileName,
+                    FileSize = originalMessage.FileSize,
+                    ThumbnailUrl = originalMessage.ThumbnailUrl,
+                    Duration = originalMessage.Duration,
+                    CreatedAt = DateTime.UtcNow,
+                    IsDeleted = false,
+                    IsEdited = false
+                };
+
+                _context.Messages.Add(forwardedMessage);
+                await _context.SaveChangesAsync();
+
+                var participantIds = await _context.ConversationParticipants
+                    .Where(cp => cp.ConversationId == conversationId)
+                    .Select(cp => cp.UserId.ToString())
+                    .ToListAsync();
+
+                var sender = await _context.Users.FindAsync(userId);
+
+                var senderIdStr = userId.ToString();
+                var recipients = participantIds.Where(id => id != senderIdStr).ToList();
+
+                await _hubContext.Clients.Users(recipients).SendAsync("NewMessage", new MessageResponseDto
+                {
+                        Id = forwardedMessage.Id,
+                        ConversationId = forwardedMessage.ConversationId,
+                        SenderId = forwardedMessage.SenderId,
+                        SenderName = sender!.Name,
+                        SenderAvatar = sender.Avatar,
+                        Content = forwardedMessage.Content,
+                        MessageType = forwardedMessage.MessageType,
+                        FileUrl = forwardedMessage.FileUrl,
+                        FileName = forwardedMessage.FileName,
+                        CreatedAt = forwardedMessage.CreatedAt
+                    });
+            }
+
+            return Ok(new { message = "Message forwarded successfully" });
+        }
+
+        [HttpPost("{messageId}/pin")]
+        public async Task<IActionResult> PinMessage(int messageId, [FromBody] PinMessageDto dto)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid user id" });
+            }
+
+            var message = await _context.Messages
+                .Include(m => m.Conversation)
+                    .ThenInclude(c => c.Participants)
+                .FirstOrDefaultAsync(m => m.Id == messageId);
+
+            if (message == null || message.IsDeleted)
+            {
+                return NotFound(new { message = "Message not found" });
+            }
+
+            var participant = message.Conversation.Participants.FirstOrDefault(p => p.UserId == userId);
+
+            var existingPin = await _context.PinnedMessages
+                .FirstOrDefaultAsync(pm => pm.MessageId == messageId);
+
+            if (dto.IsPinned)
+            {
+                if (existingPin == null)
+                {
+                    var pinnedMessage = new PinnedMessage
+                    {
+                        MessageId = messageId,
+                        ConversationId = message.ConversationId,
+                        PinnedByUserId = userId,
+                        PinnedAt = DateTime.UtcNow
+                    };
+
+                    _context.PinnedMessages.Add(pinnedMessage);
+                    await _context.SaveChangesAsync();
+
+                    var participantIds = message.Conversation.Participants.Select(p => p.UserId.ToString()).ToList();
+                    await _hubContext.Clients.Users(participantIds)
+                        .SendAsync("MessagePinned", new { messageId, conversationId = message.ConversationId });
+                }
+            }
+            else
+            {
+                if (existingPin != null)
+                {
+                    _context.PinnedMessages.Remove(existingPin);
+                    await _context.SaveChangesAsync();
+
+                    var participantIds = message.Conversation.Participants.Select(p => p.UserId.ToString()).ToList();
+                    await _hubContext.Clients.Users(participantIds)
+                        .SendAsync("MessageUnpinned", new { messageId, conversationId = message.ConversationId });
+                }
+            }
+
+            return Ok(new { message = dto.IsPinned ? "Message pinned successfully" : "Message unpinned successfully" });
+        }
+
+        [HttpGet("conversation/{conversationId}/pinned")]
+        public async Task<IActionResult> GetPinnedMessages(int conversationId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid user id" });
+            }
+
+            var participant = await _context.ConversationParticipants
+                .FirstOrDefaultAsync(cp => cp.ConversationId == conversationId && cp.UserId == userId);
+
+            if (participant == null)
+            {
+                return Forbid();
+            }
+
+            var pinnedMessages = await _context.PinnedMessages
+                .Where(pm => pm.ConversationId == conversationId)
+                .Include(pm => pm.Message)
+                    .ThenInclude(m => m.Sender)
+                .Include(pm => pm.PinnedByUser)
+                .Select(pm => new PinnedMessageResponseDto
+                {
+                    MessageId = pm.MessageId,
+                    Content = pm.Message.Content,
+                    MessageType = pm.Message.MessageType,
+                    SenderName = pm.Message.Sender.Name,
+                    PinnedByName = pm.PinnedByUser.Name,
+                    PinnedAt = pm.PinnedAt
+                })
+                .ToListAsync();
+
+            return Ok(pinnedMessages);
         }
     }
 }

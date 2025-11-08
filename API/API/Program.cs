@@ -1,15 +1,12 @@
-﻿using API.Data;
-using API.Extensions;
-using API.Helpers;
-using API.Interfaces;
-using API.Middleware;
-using API.Services;
-using API.SignalR;
+﻿using API.Services;
+using API.SignaIR;
+using ChatApi.Extensions;
+using ChatApi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -19,45 +16,35 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // ===============================
-// 1️⃣ Add services
+// 1️⃣ Add Controllers + DbContext
 // ===============================
 builder.Services.AddControllers();
-builder.Services.AddApplicationServices(builder.Configuration);
-builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddAppServices(builder.Configuration);
 
-// Add Authorization & DI
+// ===============================
+// 2️⃣ Cấu hình JWT Authentication
+// ===============================
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var key = Encoding.UTF8.GetBytes(jwtSection["Key"] ?? throw new Exception("JWT Key is missing in configuration"));
+
 builder.Services.AddAuthorization();
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
 // ===============================
-// 2️⃣ CORS cho React
-// ===============================
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowReact", policy =>
-    {
-        policy.AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowAnyOrigin();
-    });
-});
-
-// ===============================
-// 3️⃣ SignalR
+// 4️⃣ SignalR
 // ===============================
 builder.Services.AddSignalR();
 
 // ===============================
-// 4️⃣ Swagger cấu hình đầy đủ
+// 5️⃣ Swagger cấu hình đầy đủ
 // ===============================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Chat API", Version = "v1" });
 
-    // ✅ JWT Auth trong Swagger UI
+    // ✅ JWT Auth cho Swagger UI
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
@@ -82,42 +69,35 @@ builder.Services.AddSwaggerGen(c =>
             new string[] {}
         }
     });
+    c.MapType<IFormFile>(() => new OpenApiSchema { Type = "string", Format = "binary" });
+    c.MapType<IFormFileCollection>(() => new OpenApiSchema { Type = "array", Items = new OpenApiSchema { Type = "string", Format = "binary" } });
 
-    // ✅ Giúp Swagger hiển thị đúng multipart/form-data với file upload
-    c.MapType<IFormFile>(() => new OpenApiSchema
-    {
-        Type = "string",
-        Format = "binary"
-    });
-
-    c.MapType<IFormFileCollection>(() => new OpenApiSchema
-    {
-        Type = "array",
-        Items = new OpenApiSchema { Type = "string", Format = "binary" }
-    });
 });
 
 // ===============================
-// 5️⃣ Build app
+// 6️⃣ Build App
 // ===============================
 var app = builder.Build();
 
 // ===============================
-// 6️⃣ Middleware xử lý lỗi
+// 7️⃣ Middleware pipeline
 // ===============================
-app.UseMiddleware<ExceptionMiddleware>();
+app.UseRouting();
+app.UseCors("CorsPolicy");
 
-// ===============================
-// 7️⃣ Swagger UI
-// ===============================
+// ✅ Authentication phải trước Authorization
+app.UseAuthentication();
+app.UseAuthorization();
+
+// ✅ Swagger UI
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "Chat API V1");
-    options.RoutePrefix = string.Empty; // Swagger UI tại root
+    options.RoutePrefix = string.Empty;
 });
 
-// ✅ Tự động mở Swagger khi chạy project
+// ✅ Auto-open Swagger khi khởi động
 var url = app.Urls.FirstOrDefault() ?? "http://localhost:5000";
 app.Lifetime.ApplicationStarted.Register(() =>
 {
@@ -132,19 +112,11 @@ app.Lifetime.ApplicationStarted.Register(() =>
     catch { }
 });
 
-// ===============================
-// 8️⃣ Middleware pipeline
-// ===============================
-app.UseCors("AllowReact");
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseMiddleware<ActivityTrackerMiddleware>();
-
+// ✅ Map routes và SignalR
 app.MapControllers();
-app.MapHub<ChatHub>("/chathub");
-app.MapHub<PresenceHub>("/presencehub");
+app.MapHub<ChatHub>("/api/chathub");
 
 // ===============================
-// 9️⃣ Run app
+// 8️⃣ Run
 // ===============================
 app.Run();

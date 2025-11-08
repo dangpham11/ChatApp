@@ -1,44 +1,47 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 
 namespace API.Entities
 {
     public class Message
     {
         public int Id { get; set; }
-        public int SenderId { get; set; }
-        public AppUser Sender { get; set; } = null!;
-
-        public int ReceiverId { get; set; }
-        public AppUser Receiver { get; set; } = null!;
-
         public int ConversationId { get; set; }
-        public Conversation Conversation { get; set; } = null!;
+        public int SenderId { get; set; }
+        public string Content { get; set; } = null!;
+        public string MessageType { get; set; } = "text";
+        public string? FileUrl { get; set; }
+        public long? FileSize { get; set; }
+        public string? ThumbnailUrl { get; set; }
+        public double? Duration { get; set; }
+        public string? FileName { get; set; }
+        public int? VoiceDuration { get; set; }
+        [Precision(9, 6)]
+        public decimal LocationLatitude { get; set; }
 
-        public string Content { get; set; } = string.Empty;
-        public string MessageType { get; set; } = "text"; // text | image | file
-        public string? FileUrl { get; set; } // nếu là file hoặc ảnh
-
-        public bool IsRead { get; set; } = false;
-        public bool IsPinned { get; set; } = false;
-
+        [Precision(9, 6)]
+        public decimal LocationLongitude { get; set; }
+        public string? LocationAddress { get; set; }
+        public bool IsEdited { get; set; } = false;
+        public bool IsRecalled { get; set; } = false;
+        public bool IsDeleted { get; set; } = false;
+        public int? ReplyToMessageId { get; set; }
+        public int? ForwardedFromUserId { get; set; }
+        public DateTime? ForwardedFromTimestamp { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? EditedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
-        public string? VoiceUrl { get; set; }
-        public double? VoiceDuration { get; set; }
-
-        public double? Latitude { get; set; }
-        public double? Longitude { get; set; }
-
-        public int? ForwardedFromId { get; set; }
-        public AppUser? ForwardedFrom { get; set; }
-
-        public int? ReplyToMessageId { get; set; }         // FK
+        // Navigation
+        public Conversation Conversation { get; set; } = null!;
+        public User Sender { get; set; } = null!;
         public Message? ReplyToMessage { get; set; }
+        public User? ForwardedFromUser { get; set; }
 
-        public ICollection<MessageDeletion> MessageDeletions { get; set; } = new List<MessageDeletion>();
-        public ICollection<MessageEditHistory> EditHistories { get; set; } = new List<MessageEditHistory>();
-        public ICollection<MessageFile> MessageFiles { get; set; } = new List<MessageFile>();
+        public ICollection<Message> Replies { get; set; } = new List<Message>();
+        public ICollection<MessageReadReceipt> ReadReceipts { get; set; } = new List<MessageReadReceipt>();
         public ICollection<MessageReaction> Reactions { get; set; } = new List<MessageReaction>();
+        public ICollection<PinnedMessage> PinnedMessages { get; set; } = new List<PinnedMessage>();
+        public ICollection<MessageEditHistory> EditHistory { get; set; } = new List<MessageEditHistory>();
     }
 }

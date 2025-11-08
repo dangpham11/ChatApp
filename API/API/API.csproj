@@ -8,7 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Errors\**" />
+    <EmbeddedResource Remove="Errors\**" />
+    <None Remove="Errors\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="CloudinaryDotNet" Version="1.27.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.0" />
@@ -34,10 +41,6 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Errors\" />
   </ItemGroup>
 
 </Project>

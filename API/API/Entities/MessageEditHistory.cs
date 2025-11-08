@@ -6,9 +6,10 @@ namespace API.Entities
     {
         public int Id { get; set; }
         public int MessageId { get; set; }
+        public string PreviousContent { get; set; } = null!;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        // Navigation
         public Message Message { get; set; } = null!;
-        public string OldContent { get; set; } = string.Empty;
-        public string NewContent { get; set; } = string.Empty;
-        public DateTime EditedAt { get; set; } = DateTime.UtcNow;
     }
 }
