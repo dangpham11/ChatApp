@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Interfaces;
 using API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -26,54 +27,17 @@ namespace API.Controllers
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
         private readonly ICloudinaryService _cloudinaryService;
+        private readonly IEmailService _emailService;
 
-        public AuthController(DataContext context, IConfiguration configuration)
+        public AuthController(DataContext context, IConfiguration configuration, IEmailService emailService)
         {
             _context = context;
             _configuration = configuration;
             _cloudinaryService = new CloudinaryService(configuration);
+            _emailService = emailService;
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
-        {
-            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
-            {
-                return BadRequest(new { message = "Email already exists" });
-            }
-
-            var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-
-            var user = new User
-            {
-                Name = dto.Name,
-                Email = dto.Email,
-                PasswordHash = passwordHash,
-                CreatedAt = DateTime.UtcNow,
-                LastSeenAt = DateTime.UtcNow,
-                IsOnline = true
-
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            var token = GenerateJwtToken(user);
-
-            return Ok(new
-            {
-                token,
-                user = new UserResponseDto
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email,
-                    AvatarUrl = user.Avatar,
-                    IsOnline = user.IsOnline,
-                    LastSeenAt = (DateTime)user.LastSeenAt
-                }
-            });
-        }
+    
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
@@ -83,6 +47,10 @@ namespace API.Controllers
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
             {
                 return Unauthorized(new { message = "Invalid email or password" });
+            }
+            if (!user.IsEmailVerified)
+            {
+                return Unauthorized(new { message = "Email chưa được xác thực" });
             }
 
             user.IsOnline = true;
@@ -240,6 +208,125 @@ namespace API.Controllers
             return Ok(new { message = "Logged out successfully" });
         }
 
+        [HttpPost("send-verification")]
+        public async Task<IActionResult> SendVerification(RegisterDto dto)
+        {
+            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
+                return BadRequest(new { message = "Email already registered" });
+
+            var token = Guid.NewGuid().ToString();
+
+            var verification = new EmailVerification
+            {
+                Email = dto.Email,
+                Name = dto.Name,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                Token = token,
+                ExpiredAt = DateTime.UtcNow.AddMinutes(15)
+            };
+
+            _context.EmailVerifications.Add(verification);
+            await _context.SaveChangesAsync();
+
+            var verifyUrl =
+                $"{_configuration["ClientUrl"]}/verify-email?token={token}";
+
+            await _emailService.SendAsync(
+                dto.Email,
+                "Xác thực email đăng ký",
+                $"<p>Click link để xác thực:</p><a href='{verifyUrl}'>Xác thực</a>"
+            );
+
+            return Ok(new
+            {
+                message = "Vui lòng kiểm tra email để xác thực"
+            });
+        }
+
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            if (string.IsNullOrEmpty(token))
+                return BadRequest(new { message = "Token không hợp lệ" });
+
+            // Lấy bản ghi xác thực
+            var verification = await _context.EmailVerifications
+                .FirstOrDefaultAsync(x => x.Token == token);
+
+            if (verification == null)
+                return BadRequest(new { message = "Token không tồn tại" });
+
+            if (verification.ExpiredAt < DateTime.UtcNow)
+                return BadRequest(new { message = "Token đã hết hạn" });
+
+            // Phòng trường hợp user đã tồn tại (double click link)
+            var existingUser = await _context.Users
+                .AnyAsync(u => u.Email == verification.Email);
+
+            if (existingUser)
+            {
+                _context.EmailVerifications.Remove(verification);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    message = "Email đã được xác thực trước đó, bạn có thể đăng nhập"
+                });
+            }
+
+            // Tạo user CHỈ SAU KHI VERIFY
+            var user = new User
+            {
+                Name = verification.Name,
+                Email = verification.Email,
+                PasswordHash = verification.PasswordHash,
+                CreatedAt = DateTime.UtcNow,
+                IsEmailVerified = true,
+                IsOnline = false,
+                LastSeenAt = null
+            };
+
+            // Transaction để đảm bảo an toàn dữ liệu
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                _context.Users.Add(user);
+                _context.EmailVerifications.Remove(verification);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                var cloudConversation = new Conversation
+                {
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                _context.Conversations.Add(cloudConversation);
+                await _context.SaveChangesAsync();
+
+                _context.ConversationParticipants.Add(new ConversationParticipant
+                {
+                    ConversationId = cloudConversation.Id,
+                    UserId = user.Id,
+                    JoinedAt = DateTime.UtcNow
+                });
+
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+
+            return Ok(new
+            {
+                message = "Xác thực email thành công. Bạn có thể đăng nhập ngay"
+            });
+        }
+
+
         private string GenerateJwtToken(User user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? throw new Exception("JWT Key is missing in configuration")));
@@ -262,5 +349,6 @@ namespace API.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
     }
 }

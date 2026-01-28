@@ -16,6 +16,9 @@ namespace API.Data
         public DbSet<MessageReaction> MessageReactions { get; set; }
         public DbSet<PinnedMessage> PinnedMessages { get; set; }
         public DbSet<MessageEditHistory> MessageEditHistories { get; set; }
+        public DbSet<EmailVerification> EmailVerifications { get; set; }
+        public DbSet<UserBlock> UserBlocks { get; set; }
+        public DbSet<ConversationClear> ConversationClears { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

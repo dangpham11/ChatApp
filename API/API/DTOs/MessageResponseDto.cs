@@ -16,12 +16,16 @@ namespace API.DTOs
         public string? FileName { get; set; }
         public long? FileSize { get; set; }
         public string? ThumbnailUrl { get; set; }
+        public LocationDto? Location { get; set; }
+
         public double? Duration { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsEdited { get; set; }
         public DateTime? EditedAt { get; set; }
         public bool IsPinned { get; set; }
         public int? ReplyToMessageId { get; set; }
+        public int? ForwardedFromUserId { get; set; }
+        public DateTime? ForwardedFromTimestamp { get; set; }
         public MessageResponseDto? ReplyToMessage { get; set; }
         public List<ReadReceiptResponseDto> ReadReceipts { get; set; } = new();
         public List<ReactionResponseDto> Reactions { get; set; } = new();

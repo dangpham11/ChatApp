@@ -81,7 +81,20 @@ namespace API.Controllers
                     UnreadCount = _context.Messages
                         .Count(m => m.ConversationId == cp.ConversationId &&
                                    m.SenderId != userId &&
-                                   !_context.MessageReadReceipts.Any(r => r.MessageId == m.Id && r.UserId == userId))
+                                   !_context.MessageReadReceipts.Any(r => r.MessageId == m.Id && r.UserId == userId)),
+                    IsBlocked = _context.UserBlocks.Any(b =>
+    b.BlockerId == userId &&
+    b.BlockedId == cp.Conversation.Participants
+        .Where(p => p.UserId != userId)
+        .Select(p => p.UserId)
+        .FirstOrDefault()),
+
+                    IsBlockedByOther = _context.UserBlocks.Any(b =>
+                        b.BlockerId == cp.Conversation.Participants
+                            .Where(p => p.UserId != userId)
+                            .Select(p => p.UserId)
+                            .FirstOrDefault()
+                        && b.BlockedId == userId),
                 })
                 .OrderByDescending(c => c.LastMessage.CreatedAt)
                 .ToListAsync();
@@ -127,6 +140,10 @@ namespace API.Controllers
                         message = "Conversation already exists"
                     });
                 }
+            }
+            if (dto.ParticipantIds.Count == 1 && dto.ParticipantIds.Contains(userId))
+            {
+                return BadRequest("Cannot create self conversation");
             }
 
             // ✅ Nếu không tồn tại thì tạo mới
@@ -340,5 +357,204 @@ namespace API.Controllers
                 nickname = participant.Nickname
             });
         }
+
+        [HttpPost("block-user")]
+        public async Task<IActionResult> BlockUser([FromBody] BlockUserDto dto)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            if (userId == dto.TargetUserId)
+                return BadRequest("Cannot block yourself");
+
+            var exists = await _context.UserBlocks.AnyAsync(x =>
+                x.BlockerId == userId && x.BlockedId == dto.TargetUserId);
+
+            if (!exists)
+            {
+                _context.UserBlocks.Add(new UserBlock
+                {
+                    BlockerId = userId,
+                    BlockedId = dto.TargetUserId
+                });
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("unblock-user")]
+        public async Task<IActionResult> UnblockUser([FromBody] BlockUserDto dto)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var block = await _context.UserBlocks.FirstOrDefaultAsync(x =>
+                x.BlockerId == userId && x.BlockedId == dto.TargetUserId);
+
+            if (block != null)
+            {
+                _context.UserBlocks.Remove(block);
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("{conversationId}/clear-messages")]
+        public async Task<IActionResult> ClearConversationMessages(int conversationId)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            // ✅ Lấy danh sách participant (1–1)
+            var participantIds = await _context.ConversationParticipants
+                .Where(p => p.ConversationId == conversationId)
+                .Select(p => p.UserId)
+                .ToListAsync();
+
+            if (!participantIds.Contains(userId))
+                return Forbid();
+
+            // ✅ Upsert clearedAt cho user hiện tại
+            var currentClear = await _context.ConversationClears
+                .FirstOrDefaultAsync(x =>
+                    x.ConversationId == conversationId &&
+                    x.UserId == userId);
+
+            if (currentClear != null)
+            {
+                currentClear.ClearedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                _context.ConversationClears.Add(new ConversationClear
+                {
+                    ConversationId = conversationId,
+                    UserId = userId,
+                    ClearedAt = DateTime.UtcNow
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            // ============================
+            // 🔥 PHẦN QUAN TRỌNG: HARD DELETE
+            // ============================
+
+            // Lấy clearedAt của TẤT CẢ participants
+            var clearedAts = await _context.ConversationClears
+                .Where(c =>
+                    c.ConversationId == conversationId &&
+                    participantIds.Contains(c.UserId))
+                .Select(c => c.ClearedAt)
+                .ToListAsync();
+
+            // Chỉ khi TẤT CẢ users đều đã clear
+            if (clearedAts.Count == participantIds.Count)
+            {
+                var minClearedAt = clearedAts.Min();
+
+                // ❌ Xoá hẳn khỏi DB các tin nhắn đã "vô dụng"
+                var messagesToDelete = await _context.Messages
+                    .Where(m =>
+                        m.ConversationId == conversationId &&
+                        m.CreatedAt <= minClearedAt)
+                    .ToListAsync();
+
+                if (messagesToDelete.Any())
+                {
+                    _context.Messages.RemoveRange(messagesToDelete);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            return Ok(new
+            {
+                message = "Conversation cleared for current user"
+            });
+        }
+        [HttpGet("{conversationId}/search-messages")]
+        public async Task<IActionResult> SearchMessages(
+    int conversationId,
+    [FromQuery] string q,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 20)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user id" });
+
+            if (string.IsNullOrWhiteSpace(q))
+                return BadRequest(new { message = "Search keyword is required" });
+
+            // ✅ Kiểm tra participant
+            var isParticipant = await _context.ConversationParticipants
+                .AnyAsync(cp => cp.ConversationId == conversationId && cp.UserId == userId);
+
+            if (!isParticipant)
+                return Forbid();
+
+            // ✅ Lấy clearedAt (nếu có)
+            var clearedAt = await _context.ConversationClears
+                .Where(c => c.ConversationId == conversationId && c.UserId == userId)
+                .Select(c => (DateTime?)c.ClearedAt)
+                .FirstOrDefaultAsync();
+
+            // ============================
+            // 🔍 QUERY SEARCH
+            // ============================
+            var query = _context.Messages
+                .Where(m =>
+                    m.ConversationId == conversationId &&
+                    !m.IsDeleted &&
+                    EF.Functions.Like(m.Content, $"%{q}%"));
+
+            // ⛔ Ẩn tin nhắn đã bị clear
+            if (clearedAt != null)
+            {
+                query = query.Where(m => m.CreatedAt > clearedAt.Value);
+            }
+
+            var messages = await query
+                .Include(m => m.Sender)
+                .Include(m => m.ReplyToMessage)
+                    .ThenInclude(r => r.Sender)
+                .OrderByDescending(m => m.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(m => new MessageResponseDto
+                {
+                    Id = m.Id,
+                    ConversationId = m.ConversationId,
+                    SenderId = m.SenderId,
+                    SenderName = m.Sender.Name,
+                    SenderAvatar = m.Sender.Avatar,
+                    Content = m.Content,
+                    MessageType = m.MessageType,
+                    CreatedAt = m.CreatedAt,
+                    ReplyToMessageId = m.ReplyToMessageId,
+                    ReplyToMessage = m.ReplyToMessage != null
+                        ? new MessageResponseDto
+                        {
+                            Id = m.ReplyToMessage.Id,
+                            Content = m.ReplyToMessage.Content,
+                            SenderId = m.ReplyToMessage.SenderId,
+                            SenderName = m.ReplyToMessage.Sender.Name,
+                            SenderAvatar = m.ReplyToMessage.Sender.Avatar
+                        }
+                        : null
+                })
+                .ToListAsync();
+
+            messages.Reverse(); // hiển thị tăng dần thời gian
+
+            return Ok(new
+            {
+                keyword = q,
+                page,
+                pageSize,
+                total = messages.Count,
+                items = messages
+            });
+        }
+
     }
 }

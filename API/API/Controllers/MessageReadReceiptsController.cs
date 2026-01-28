@@ -23,54 +23,55 @@ public class MessageReadReceiptsController : ControllerBase
         _hubContext = hubContext;
     }
 
-    [HttpPost("{messageId}/mark-read")]
-    public async Task<IActionResult> MarkAsRead(int messageId)
+    [HttpPost("conversation/{conversationId}/mark-read")]
+    public async Task<IActionResult> MarkConversationAsRead(int conversationId)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
 
-        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
-        {
-            return Unauthorized(new { message = "Invalid user id" });
-        }
+        var participant = await _context.ConversationParticipants
+            .AnyAsync(cp => cp.ConversationId == conversationId && cp.UserId == userId);
 
-        var message = await _context.Messages
-            .Include(m => m.Conversation)
-                .ThenInclude(c => c.Participants)
-            .FirstOrDefaultAsync(m => m.Id == messageId);
-
-        if (message == null || message.IsDeleted)
-        {
-            return NotFound(new { message = "Message not found" });
-        }
-
-        if (!message.Conversation.Participants.Any(p => p.UserId == userId))
-        {
+        if (!participant)
             return Forbid();
+
+        var unreadMessages = await _context.Messages
+            .Where(m =>
+                m.ConversationId == conversationId &&
+                m.SenderId != userId &&
+                !m.ReadReceipts.Any(rr => rr.UserId == userId))
+            .Select(m => m.Id)
+            .ToListAsync();
+
+        if (!unreadMessages.Any())
+            return Ok();
+
+        foreach (var messageId in unreadMessages)
+        {
+            _context.MessageReadReceipts.Add(new MessageReadReceipt
+            {
+                MessageId = messageId,
+                UserId = userId
+            });
         }
 
-        var existingReceipt = await _context.MessageReadReceipts
-            .FirstOrDefaultAsync(r => r.MessageId == messageId && r.UserId == userId);
-
-        if (existingReceipt != null)
-        {
-            return Ok(new { message = "Already marked as read" });
-        }
-
-        var readReceipt = new MessageReadReceipt
-        {
-            MessageId = messageId,
-            UserId = userId,
-            ReadAt = DateTime.UtcNow
-        };
-
-        _context.MessageReadReceipts.Add(readReceipt);
         await _context.SaveChangesAsync();
 
-        var participantIds = message.Conversation.Participants.Select(p => p.UserId.ToString()).ToList();
-        await _hubContext.Clients.Users(participantIds)
-            .SendAsync("MessageRead", new { messageId, userId, readAt = readReceipt.ReadAt });
+        var participantIds = await _context.ConversationParticipants
+            .Where(cp => cp.ConversationId == conversationId)
+            .Select(cp => cp.UserId.ToString())
+            .ToListAsync();
 
-        return Ok(new { message = "Message marked as read" });
+        await _hubContext.Clients.Users(participantIds)
+            .SendAsync("MessagesRead", new
+            {
+                conversationId,
+                userId,
+                messageIds = unreadMessages
+            });
+
+        return Ok();
     }
 
     [HttpGet("{messageId}/receipts")]

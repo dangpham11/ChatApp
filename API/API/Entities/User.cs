@@ -11,6 +11,7 @@ namespace API.Entities
         public string Name { get; set; } = null!;
         public string? Avatar { get; set; }
         public bool IsOnline { get; set; } = false;
+        public bool IsEmailVerified { get; set; } = false;
         public string? Bio { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Location { get; set; }

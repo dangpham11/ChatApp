@@ -12,6 +12,7 @@ namespace API.DTOs
         public long? FileSize { get; set; }
         public string? ThumbnailUrl { get; set; }
         public double? Duration { get; set; } // for audio/video messages
-        public int? ReplyToMessageId { get; set; } 
+        public int? ReplyToMessageId { get; set; }
+        public LocationDto? Location { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using API.Services;
+﻿using API.Interfaces;
+using API.Services;
 using API.SignaIR;
 using ChatApi.Extensions;
 using ChatApi.Middleware;
@@ -30,6 +31,9 @@ var key = Encoding.UTF8.GetBytes(jwtSection["Key"] ?? throw new Exception("JWT K
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddSingleton<IUserIdProvider, NameIdentifierUserIdProvider>();
+
 
 // ===============================
 // 4️⃣ SignalR

@@ -47,6 +47,21 @@ namespace API.Controllers
                 return Forbid();
             }
 
+            var clearedAt = await _context.ConversationClears
+        .Where(c => c.ConversationId == conversationId && c.UserId == userId)
+        .Select(c => (DateTime?)c.ClearedAt)
+        .FirstOrDefaultAsync();
+
+            // ✅ QUERY GỐC
+            var query = _context.Messages
+                .Where(m => m.ConversationId == conversationId && !m.IsDeleted);
+
+            // ✅ FILTER THEO CLEARED AT
+            if (clearedAt != null)
+            {
+                query = query.Where(m => m.CreatedAt > clearedAt.Value);
+            }
+
             var messages = await _context.Messages
     .Where(m => m.ConversationId == conversationId && !m.IsDeleted)
     .Include(m => m.Sender)
@@ -72,6 +87,14 @@ namespace API.Controllers
         FileSize = m.FileSize,
         ThumbnailUrl = m.ThumbnailUrl,
         Duration = m.Duration,
+        Location = m.MessageType == "location"
+            ? new LocationDto
+            {
+                Latitude = (double)m.LocationLatitude,
+                Longitude = (double)m.LocationLongitude,
+                Address = m.LocationAddress
+            }
+            : null,
         CreatedAt = m.CreatedAt,
         IsEdited = m.IsEdited,
         EditedAt = m.UpdatedAt,
@@ -134,6 +157,7 @@ namespace API.Controllers
                 // Nếu không tồn tại, để null (không lỗi)
             }
 
+
             var message = new Message
             {
                 ConversationId = dto.ConversationId,
@@ -150,9 +174,24 @@ namespace API.Controllers
                 IsDeleted = false,
                 IsEdited = false
             };
+            if (dto.MessageType == "location" && dto.Location != null)
+            {
+                message.LocationLatitude = (decimal)dto.Location.Latitude;
+                message.LocationLongitude = (decimal)dto.Location.Longitude;
+                message.LocationAddress = dto.Location.Address;
+            }
+
 
             _context.Messages.Add(message);
             await _context.SaveChangesAsync();
+            Message? replyToMessage = null;
+
+            if (message.ReplyToMessageId.HasValue)
+            {
+                replyToMessage = await _context.Messages
+                    .Include(m => m.Sender)
+                    .FirstOrDefaultAsync(m => m.Id == message.ReplyToMessageId.Value);
+            }
 
             var sender = await _context.Users.FindAsync(userId);
 
@@ -174,6 +213,17 @@ namespace API.Controllers
                 IsEdited = false,
                 IsPinned = false,
                 ReplyToMessageId = message.ReplyToMessageId,
+                ReplyToMessage = replyToMessage != null
+        ? new MessageResponseDto
+        {
+            Id = replyToMessage.Id,
+            Content = replyToMessage.Content,
+            MessageType = replyToMessage.MessageType,
+            SenderId = replyToMessage.SenderId,
+            SenderName = replyToMessage.Sender.Name,
+            SenderAvatar = replyToMessage.Sender.Avatar
+        }
+        : null,
                 ReadReceipts = new List<ReadReceiptResponseDto>(),
                 Reactions = new List<ReactionResponseDto>()
             };
@@ -183,9 +233,8 @@ namespace API.Controllers
                 .Select(cp => cp.UserId.ToString())
                 .ToListAsync();
 
-            var senderId = message.SenderId.ToString();
-            var recipients = participantIds.Where(id => id != senderId).ToList();
-            await _hubContext.Clients.Users(recipients).SendAsync("NewMessage", messageResponse);
+            await _hubContext.Clients.Users(participantIds)
+    .SendAsync("NewMessage", messageResponse);
             await _hubContext.Clients.Users(participantIds)
                 .SendAsync("ConversationUpdated", new
         {
@@ -290,9 +339,7 @@ namespace API.Controllers
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
-            {
                 return Unauthorized(new { message = "Invalid user id" });
-            }
 
             var message = await _context.Messages
                 .Include(m => m.Conversation)
@@ -300,134 +347,170 @@ namespace API.Controllers
                 .FirstOrDefaultAsync(m => m.Id == messageId);
 
             if (message == null || message.IsDeleted)
-            {
                 return NotFound(new { message = "Message not found" });
-            }
 
             if (!message.Conversation.Participants.Any(p => p.UserId == userId))
-            {
                 return Forbid();
-            }
 
+            // 🔥 STEP 2: check existing reaction
             var existingReaction = await _context.MessageReactions
-                .FirstOrDefaultAsync(r => r.MessageId == messageId && r.UserId == userId && r.Emoji == dto.Emoji);
+                .FirstOrDefaultAsync(r =>
+                    r.MessageId == messageId &&
+                    r.UserId == userId &&
+                    r.Emoji == dto.Emoji
+                );
 
+            // 🔥 STEP 3: toggle
             if (existingReaction != null)
             {
                 _context.MessageReactions.Remove(existingReaction);
-                await _context.SaveChangesAsync();
-
-                var participantIds = message.Conversation.Participants.Select(p => p.UserId.ToString()).ToList();
-                await _hubContext.Clients.Users(participantIds)
-                    .SendAsync("ReactionRemoved", new { messageId, userId, emoji = dto.Emoji });
-
-                return Ok(new { message = "Reaction removed" });
+            }
+            else
+            {
+                _context.MessageReactions.Add(new MessageReaction
+                {
+                    MessageId = messageId,
+                    UserId = userId,
+                    Emoji = dto.Emoji,
+                    CreatedAt = DateTime.UtcNow
+                });
             }
 
-            var reaction = new MessageReaction
-            {
-                MessageId = messageId,
-                UserId = userId,
-                Emoji = dto.Emoji,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _context.MessageReactions.Add(reaction);
             await _context.SaveChangesAsync();
 
-            var user = await _context.Users.FindAsync(userId);
+            // 🔥 reload reactions
+            var reactions = await _context.MessageReactions
+                .Where(r => r.MessageId == messageId)
+                .Include(r => r.User)
+                .Select(r => new ReactionResponseDto
+                {
+                    Id = r.Id,
+                    Emoji = r.Emoji,
+                    UserId = r.UserId,
+                    Username = r.User.Name,
+                    CreatedAt = r.CreatedAt
+                })
+                .ToListAsync();
 
-            var participantIdsForReaction = message.Conversation.Participants.Select(p => p.UserId.ToString()).ToList();
-            await _hubContext.Clients.Users(participantIdsForReaction)
-                .SendAsync("ReactionAdded", new
+            var participantIds = message.Conversation.Participants
+                .Select(p => p.UserId.ToString())
+                .ToList();
+
+            await _hubContext.Clients.Users(participantIds)
+                .SendAsync("MessageReactionUpdated", new
                 {
                     messageId,
-                    reaction = new ReactionResponseDto
-                    {
-                        Id = reaction.Id,
-                        Emoji = reaction.Emoji,
-                        UserId = userId,
-                        Username = user!.Name,
-                        CreatedAt = reaction.CreatedAt
-                    }
+                    reactions
                 });
 
-            return Ok(new { message = "Reaction added successfully" });
+            return Ok();
         }
 
         [HttpPost("forward")]
-        public async Task<IActionResult> ForwardMessage([FromBody] ForwardDto dto)
+public async Task<IActionResult> ForwardMessage([FromBody] ForwardDto dto)
+{
+    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+        return Unauthorized();
+
+    var sender = await _context.Users.FindAsync(userId);
+    if (sender == null) return Unauthorized();
+
+    var originalMessage = await _context.Messages.FindAsync(dto.MessageId);
+    if (originalMessage == null || originalMessage.IsDeleted)
+        return NotFound("Original message not found");
+
+    foreach (var conversationId in dto.TargetConversationIds)
+    {
+        // ✅ check participant
+        var isParticipant = await _context.ConversationParticipants
+            .AnyAsync(cp => cp.ConversationId == conversationId && cp.UserId == userId);
+
+        if (!isParticipant) continue;
+
+        // =========================
+        // 1️⃣ CREATE NEW MESSAGE (copy)
+        // =========================
+        var message = new Message
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            ConversationId = conversationId,
+            SenderId = userId,
 
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            Content = originalMessage.Content,
+            MessageType = originalMessage.MessageType,
+            FileUrl = originalMessage.FileUrl,
+            FileName = originalMessage.FileName,
+            FileSize = originalMessage.FileSize,
+            ThumbnailUrl = originalMessage.ThumbnailUrl,
+            Duration = originalMessage.Duration,
+
+            ForwardedFromUserId = originalMessage.SenderId,
+            ForwardedFromTimestamp = originalMessage.CreatedAt,
+
+            CreatedAt = DateTime.UtcNow,
+            IsDeleted = false,
+            IsEdited = false
+        };
+
+        _context.Messages.Add(message);
+        await _context.SaveChangesAsync();
+
+        // =========================
+        // 2️⃣ BUILD DTO (giống SendMessage)
+        // =========================
+        var messageDto = new MessageResponseDto
+        {
+            Id = message.Id,
+            ConversationId = conversationId,
+            SenderId = userId,
+            SenderName = sender.Name,
+            SenderAvatar = sender.Avatar,
+
+            Content = message.Content,
+            MessageType = message.MessageType,
+            FileUrl = message.FileUrl,
+            FileName = message.FileName,
+            FileSize = message.FileSize,
+            ThumbnailUrl = message.ThumbnailUrl,
+
+            CreatedAt = message.CreatedAt,
+            IsEdited = false,
+            IsPinned = false,
+
+            ForwardedFromUserId = message.ForwardedFromUserId,
+            ForwardedFromTimestamp = message.ForwardedFromTimestamp,
+
+            ReadReceipts = new(),
+            Reactions = new()
+        };
+
+        // =========================
+        // 3️⃣ SIGNALR (Y HỆT SEND)
+        // =========================
+        var participantIds = await _context.ConversationParticipants
+            .Where(p => p.ConversationId == conversationId)
+            .Select(p => p.UserId.ToString())
+            .ToListAsync();
+
+        await _hubContext.Clients.Users(participantIds)
+            .SendAsync("NewMessage", messageDto);
+
+        await _hubContext.Clients.Users(participantIds)
+            .SendAsync("ConversationUpdated", new
             {
-                return Unauthorized(new { message = "Invalid user id" });
-            }
+                conversationId,
+                lastMessage = message.Content,
+                lastMessageTime = message.CreatedAt,
+                senderId = sender.Id,
+                senderName = sender.Name,
+                senderAvatar = sender.Avatar
+            });
+    }
 
-            var originalMessage = await _context.Messages.FindAsync(dto.MessageId);
+    return Ok(new { message = "Message forwarded successfully" });
+}
 
-            if (originalMessage == null || originalMessage.IsDeleted)
-            {
-                return NotFound(new { message = "Original message not found" });
-            }
 
-            foreach (var conversationId in dto.TargetConversationIds)
-            {
-                var participant = await _context.ConversationParticipants
-                    .FirstOrDefaultAsync(cp => cp.ConversationId == conversationId && cp.UserId == userId);
-
-                if (participant == null)
-                {
-                    continue;
-                }
-
-                var forwardedMessage = new Message
-                {
-                    ConversationId = conversationId,
-                    SenderId = userId,
-                    Content = originalMessage.Content,
-                    MessageType = originalMessage.MessageType,
-                    FileUrl = originalMessage.FileUrl,
-                    FileName = originalMessage.FileName,
-                    FileSize = originalMessage.FileSize,
-                    ThumbnailUrl = originalMessage.ThumbnailUrl,
-                    Duration = originalMessage.Duration,
-                    CreatedAt = DateTime.UtcNow,
-                    IsDeleted = false,
-                    IsEdited = false
-                };
-
-                _context.Messages.Add(forwardedMessage);
-                await _context.SaveChangesAsync();
-
-                var participantIds = await _context.ConversationParticipants
-                    .Where(cp => cp.ConversationId == conversationId)
-                    .Select(cp => cp.UserId.ToString())
-                    .ToListAsync();
-
-                var sender = await _context.Users.FindAsync(userId);
-
-                var senderIdStr = userId.ToString();
-                var recipients = participantIds.Where(id => id != senderIdStr).ToList();
-
-                await _hubContext.Clients.Users(recipients).SendAsync("NewMessage", new MessageResponseDto
-                {
-                        Id = forwardedMessage.Id,
-                        ConversationId = forwardedMessage.ConversationId,
-                        SenderId = forwardedMessage.SenderId,
-                        SenderName = sender!.Name,
-                        SenderAvatar = sender.Avatar,
-                        Content = forwardedMessage.Content,
-                        MessageType = forwardedMessage.MessageType,
-                        FileUrl = forwardedMessage.FileUrl,
-                        FileName = forwardedMessage.FileName,
-                        CreatedAt = forwardedMessage.CreatedAt
-                    });
-            }
-
-            return Ok(new { message = "Message forwarded successfully" });
-        }
 
         [HttpPost("{messageId}/pin")]
         public async Task<IActionResult> PinMessage(int messageId, [FromBody] PinMessageDto dto)

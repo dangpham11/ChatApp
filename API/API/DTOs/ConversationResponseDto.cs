@@ -13,5 +13,7 @@ namespace API.DTOs
         public MessageResponseDto? LastMessage { get; set; }
         public List<ParticipantResponseDto> Participants { get; set; } = new();
         public int UnreadCount { get; set; }
+        public bool IsBlocked { get; set; }
+        public bool IsBlockedByOther { get; set; }
     }
 }

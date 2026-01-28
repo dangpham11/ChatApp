@@ -52,7 +52,8 @@ namespace API.Controllers
     "audio/mpeg", "audio/wav", "audio/mp3",
     "audio/webm", "audio/ogg", // ✅ thêm 2 dòng này
     "application/pdf", "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "audio/webm;codecs=opus","audio/ogg; codecs=opus"
 };
 
             if (!allowedTypes.Contains(file.ContentType))

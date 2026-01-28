@@ -8,6 +8,6 @@ namespace API.DTOs
 {
     public class UpdateNicknameDto
     {
-        public string Nickname { get; set; } = string.Empty;
+        public string? Nickname { get; set; } 
     }
 }

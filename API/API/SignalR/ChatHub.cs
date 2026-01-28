@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using API.SignalR;
+using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace API.SignaIR
@@ -8,27 +10,41 @@ namespace API.SignaIR
         // Khi client kết nối
         public override async Task OnConnectedAsync()
         {
-            var userId = Context.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userId = Context.User?
+                .FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             if (!string.IsNullOrEmpty(userId))
             {
-                // ✅ Không cần Groups nữa, vì SignalR đã biết userId qua IUserIdProvider
-                await Clients.All.SendAsync("UserConnected", userId);
+                // 👇 ADD USER VÀO GROUP CÁ NHÂN
+                await Groups.AddToGroupAsync(
+                    Context.ConnectionId,
+                    $"user-{userId}"
+                );
             }
-            Console.WriteLine($"[HUB CONNECT] userId = {userId ?? "null"}");
+
             await base.OnConnectedAsync();
         }
 
         // Khi client ngắt kết nối
-        public override async Task OnDisconnectedAsync(System.Exception? exception)
-        {
-            var userId = Context.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (!string.IsNullOrEmpty(userId))
-            {
-                await Clients.All.SendAsync("UserDisconnected", userId);
-            }
+        public override async Task OnDisconnectedAsync(Exception? exception)
+{
+    var userId = Context.User?
+        .FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            await base.OnDisconnectedAsync(exception);
+    if (!string.IsNullOrEmpty(userId))
+    {
+        var count = UserConnectionManager.RemoveConnection(userId, Context.ConnectionId);
+
+        // 👉 CHỈ gửi offline khi connection cuối cùng mất
+        if (count == 0)
+        {
+            await Clients.All.SendAsync("UserDisconnected", userId);
         }
+    }
+
+    await base.OnDisconnectedAsync(exception);
+}
+
 
         // ============================
         // Các phương thức gửi realtime
