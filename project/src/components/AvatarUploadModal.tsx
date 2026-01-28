@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react';
-import { X, Camera, Upload, User } from 'lucide-react';
+import React, { useRef, useState } from "react";
+import { X, Camera, Upload } from "lucide-react";
 
 interface AvatarUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentAvatar: string;
-  onAvatarChange: (avatarUrl: string) => void;
+  onAvatarChange: (file: File) => void; // <-- nhận File
 }
 
 export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
@@ -17,14 +17,15 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null); // ✅ store the File
 
   if (!isOpen) return null;
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        alert('File size must be less than 5MB');
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size must be less than 5MB");
         return;
       }
 
@@ -33,18 +34,20 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
         setPreviewUrl(e.target?.result as string);
       };
       reader.readAsDataURL(file);
+
+      setSelectedFile(file); // ✅ store the File
     }
   };
 
   const handleSave = async () => {
-    if (previewUrl) {
+    if (selectedFile) {
       setIsUploading(true);
-      // Simulate upload delay
       setTimeout(() => {
-        onAvatarChange(previewUrl);
+        onAvatarChange(selectedFile); // ✅ pass the File
         setIsUploading(false);
         onClose();
         setPreviewUrl(null);
+        setSelectedFile(null);
       }, 1500);
     }
   };
@@ -53,15 +56,6 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
     setPreviewUrl(null);
     onClose();
   };
-
-  const predefinedAvatars = [
-    'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-    'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-    'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-    'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-    'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-    'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-  ];
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -92,7 +86,9 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
                 <Camera className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-sm text-gray-500 mt-2">Click the camera icon to upload a new photo</p>
+            <p className="text-sm text-gray-500 mt-2">
+              Click the camera icon to upload a new photo
+            </p>
           </div>
 
           {/* Upload Options */}
@@ -114,28 +110,6 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
             />
           </div>
 
-          {/* Predefined Avatars */}
-          <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-3">Choose from gallery</h4>
-            <div className="grid grid-cols-6 gap-3">
-              {predefinedAvatars.map((avatar, index) => (
-                <button
-                  key={index}
-                  onClick={() => setPreviewUrl(avatar)}
-                  className={`w-16 h-16 rounded-full overflow-hidden border-2 transition-all duration-150 ${
-                    previewUrl === avatar ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-blue-300'
-                  }`}
-                >
-                  <img
-                    src={avatar}
-                    alt={`Avatar ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Action Buttons */}
           <div className="flex space-x-3">
             <button
@@ -155,7 +129,7 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
                   Saving...
                 </div>
               ) : (
-                'Save Avatar'
+                "Save Avatar"
               )}
             </button>
           </div>

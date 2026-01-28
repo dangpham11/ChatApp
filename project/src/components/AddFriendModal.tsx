@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { X, Search, UserPlus, Mail, Loader2 } from 'lucide-react';
-import type { User } from '../types';
-import { UserAvatar } from './UserAvatar';
-import { userService, type SearchUserResult } from '../services/userService';
-import { conversationService } from '../services/conversationService';
-import { messageService } from '../services/messageService';
+import React, { useState, useEffect } from "react";
+import { X, Search, UserPlus, Mail, Loader2 } from "lucide-react";
+import type { User } from "../types";
+import { UserAvatar } from "./UserAvatar";
+import { userService, type SearchUserResult } from "../services/userService";
+import { conversationService } from "../services/conversationService";
+import { messageService } from "../services/messageService";
 
 interface AddFriendModalProps {
   isOpen: boolean;
@@ -15,9 +15,11 @@ interface AddFriendModalProps {
 
 const mapSearchResultToUser = (result: SearchUserResult): User => ({
   id: result.id,
-  name: result.displayName,
+  name: result.name,
   email: result.email,
-  avatar: result.avatarUrl || 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
+  avatar:
+    result.avatarUrl ||
+    "https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2",
   isOnline: result.isOnline,
 });
 
@@ -27,8 +29,8 @@ export const AddFriendModal: React.FC<AddFriendModalProps> = ({
   onAddFriend,
   onConversationCreated,
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [emailInput, setEmailInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [emailInput, setEmailInput] = useState("");
   const [searchResults, setSearchResults] = useState<SearchUserResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isAddingFriend, setIsAddingFriend] = useState<string | null>(null);
@@ -37,8 +39,8 @@ export const AddFriendModal: React.FC<AddFriendModalProps> = ({
 
   useEffect(() => {
     if (!isOpen) {
-      setSearchQuery('');
-      setEmailInput('');
+      setSearchQuery("");
+      setEmailInput("");
       setSearchResults([]);
       setError(null);
       setSuccessMessage(null);
@@ -59,8 +61,8 @@ export const AddFriendModal: React.FC<AddFriendModalProps> = ({
         const results = await userService.searchUsers(searchQuery);
         setSearchResults(results);
       } catch (err) {
-        console.error('Error searching users:', err);
-        setError('Failed to search users');
+        console.error("Error searching users:", err);
+        setError("Failed to search users");
         setSearchResults([]);
       } finally {
         setIsSearching(false);
@@ -79,13 +81,15 @@ export const AddFriendModal: React.FC<AddFriendModalProps> = ({
     setSuccessMessage(null);
 
     try {
-      const conversation = await conversationService.createConversation([user.id]);
+      const conversation = await conversationService.createConversation({
+        participantIds: [Number(user.id)], // ép về number vì backend dùng number
+      });
 
-      await messageService.sendMessage(
-        conversation.conversationId,
-        'Xin chào! 👋',
-        'text'
-      );
+      await messageService.sendMessage({
+        conversationId: Number(conversation.conversationId), // backend dùng number
+        content: "Xin chào! 👋",
+        messageType: "text", // đúng key 'messageType' thay vì 'type'
+      });
 
       const mappedUser = mapSearchResultToUser(user);
       onAddFriend(mappedUser);
@@ -94,14 +98,18 @@ export const AddFriendModal: React.FC<AddFriendModalProps> = ({
         onConversationCreated(conversation.conversationId.toString());
       }
 
-      setSuccessMessage(`Started conversation with ${user.displayName}`);
+      setSuccessMessage(`Started conversation with ${user.name}`);
 
       setTimeout(() => {
         onClose();
       }, 1500);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      console.error('Error adding friend:', err);
-      setError(err.response?.data?.message || 'Failed to add friend and start conversation');
+      console.error("Error adding friend:", err);
+      setError(
+        err.response?.data?.message ||
+          "Failed to add friend and start conversation"
+      );
     } finally {
       setIsAddingFriend(null);
     }
@@ -110,7 +118,7 @@ export const AddFriendModal: React.FC<AddFriendModalProps> = ({
   const handleAddByEmail = async () => {
     if (!emailInput.trim()) return;
 
-    setIsAddingFriend('email');
+    setIsAddingFriend("email");
     setError(null);
     setSuccessMessage(null);
 
@@ -118,16 +126,17 @@ export const AddFriendModal: React.FC<AddFriendModalProps> = ({
       const user = await userService.getUserByEmail(emailInput);
 
       if (!user) {
-        setError('User not found with this email');
+        setError("User not found with this email");
         setIsAddingFriend(null);
         return;
       }
 
       await handleAddFriend(user);
-      setEmailInput('');
+      setEmailInput("");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      console.error('Error adding friend by email:', err);
-      setError(err.response?.data?.message || 'Failed to find user');
+      console.error("Error adding friend by email:", err);
+      setError(err.response?.data?.message || "Failed to find user");
       setIsAddingFriend(null);
     }
   };
@@ -173,13 +182,13 @@ export const AddFriendModal: React.FC<AddFriendModalProps> = ({
               </div>
               <button
                 onClick={handleAddByEmail}
-                disabled={!emailInput.trim() || isAddingFriend === 'email'}
+                disabled={!emailInput.trim() || isAddingFriend === "email"}
                 className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
-                {isAddingFriend === 'email' ? (
+                {isAddingFriend === "email" ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                  'Add Friend'
+                  "Add Friend"
                 )}
               </button>
             </div>
@@ -205,11 +214,13 @@ export const AddFriendModal: React.FC<AddFriendModalProps> = ({
                 </div>
               )}
 
-              {!isSearching && searchQuery.trim().length > 0 && searchResults.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  No users found
-                </div>
-              )}
+              {!isSearching &&
+                searchQuery.trim().length > 0 &&
+                searchResults.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No users found
+                  </div>
+                )}
 
               {!isSearching && searchQuery.trim().length === 0 && (
                 <div className="text-center py-8 text-gray-400">
@@ -217,40 +228,43 @@ export const AddFriendModal: React.FC<AddFriendModalProps> = ({
                 </div>
               )}
 
-              {!isSearching && searchResults.map((user) => {
-                const mappedUser = mapSearchResultToUser(user);
-                return (
-                  <div
-                    key={user.id}
-                    className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition-colors duration-150"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <UserAvatar user={mappedUser} size="md" />
-                      <div>
-                        <h5 className="font-medium text-gray-900">{user.displayName}</h5>
-                        <p className="text-sm text-gray-500">{user.email}</p>
-                        <p className="text-xs text-gray-400">
-                          {user.isOnline ? 'Online' : 'Offline'}
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleAddFriend(user)}
-                      disabled={isAddingFriend === user.id}
-                      className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              {!isSearching &&
+                searchResults.map((user) => {
+                  const mappedUser = mapSearchResultToUser(user);
+                  return (
+                    <div
+                      key={user.id}
+                      className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition-colors duration-150"
                     >
-                      {isAddingFriend === user.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <>
-                          <UserPlus className="w-4 h-4" />
-                          <span className="text-sm">Add</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                );
-              })}
+                      <div className="flex items-center space-x-3">
+                        <UserAvatar user={mappedUser} size="md" />
+                        <div>
+                          <h5 className="font-medium text-gray-900">
+                            {user.name}
+                          </h5>
+                          <p className="text-sm text-gray-500">{user.email}</p>
+                          <p className="text-xs text-gray-400">
+                            {user.isOnline ? "Online" : "Offline"}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleAddFriend(user)}
+                        disabled={isAddingFriend === user.id}
+                        className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isAddingFriend === user.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <UserPlus className="w-4 h-4" />
+                            <span className="text-sm">Add</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </div>

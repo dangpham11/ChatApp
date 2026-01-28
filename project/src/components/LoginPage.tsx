@@ -1,31 +1,33 @@
-import { useState } from 'react';
-import { MessageSquare, Eye, EyeOff, Mail, Lock } from 'lucide-react';
-import { authService } from '../services/authService';
-import { mapUserResponseToUser } from '../utils/mappers';
+import { useState } from "react";
+import { MessageSquare, Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { authService } from "../services/authService";
+import { mapUserResponseToUser } from "../utils/mappers";
 
 interface LoginPageProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onLogin: (user: any) => void;
   onSwitchToRegister: () => void;
 }
 
 export const LoginPage = ({ onLogin, onSwitchToRegister }: LoginPageProps) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
       const response = await authService.login({ email, password });
       const user = mapUserResponseToUser(response.user);
       onLogin(user);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError(err.message || "Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -39,8 +41,12 @@ export const LoginPage = ({ onLogin, onSwitchToRegister }: LoginPageProps) => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-2xl mb-4 shadow-lg">
             <MessageSquare className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-          <p className="text-gray-600">Sign in to continue your conversations</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Welcome Back
+          </h1>
+          <p className="text-gray-600">
+            Sign in to continue your conversations
+          </p>
         </div>
 
         {/* Login Form */}
@@ -72,7 +78,7 @@ export const LoginPage = ({ onLogin, onSwitchToRegister }: LoginPageProps) => {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
@@ -84,7 +90,11 @@ export const LoginPage = ({ onLogin, onSwitchToRegister }: LoginPageProps) => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-150"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -96,7 +106,7 @@ export const LoginPage = ({ onLogin, onSwitchToRegister }: LoginPageProps) => {
               </div>
             )}
 
-            {/* Forgot Password */}
+            {/* Forgot Password
             <div className="text-right">
               <button
                 type="button"
@@ -104,7 +114,7 @@ export const LoginPage = ({ onLogin, onSwitchToRegister }: LoginPageProps) => {
               >
                 Forgot password?
               </button>
-            </div>
+            </div> */}
 
             {/* Login Button */}
             <button
@@ -118,7 +128,7 @@ export const LoginPage = ({ onLogin, onSwitchToRegister }: LoginPageProps) => {
                   Signing in...
                 </div>
               ) : (
-                'Sign In'
+                "Sign In"
               )}
             </button>
           </form>
@@ -133,7 +143,7 @@ export const LoginPage = ({ onLogin, onSwitchToRegister }: LoginPageProps) => {
           {/* Register Link */}
           <div className="text-center">
             <p className="text-gray-600">
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <button
                 onClick={onSwitchToRegister}
                 className="text-blue-500 hover:text-blue-600 font-medium transition-colors duration-150"

@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { BellOff, CheckCircle, AlertCircle } from 'lucide-react';
+import React, { useEffect } from "react";
+import { BellOff, CheckCircle, AlertCircle } from "lucide-react";
 
 interface ToastProps {
   message: string;
-  type?: 'success' | 'info' | 'error';
-  icon?: 'bell' | 'check' | 'alert';
+  type?: "success" | "info" | "error";
+  icon?: "bell" | "check" | "alert";
   isVisible: boolean;
   onClose: () => void;
   duration?: number;
@@ -12,8 +12,7 @@ interface ToastProps {
 
 export const Toast: React.FC<ToastProps> = ({
   message,
-  type = 'info',
-  icon = 'bell',
+  icon = "bell",
   isVisible,
   onClose,
   duration = 3000,
@@ -31,11 +30,11 @@ export const Toast: React.FC<ToastProps> = ({
 
   const getIcon = () => {
     switch (icon) {
-      case 'bell':
+      case "bell":
         return <BellOff className="w-5 h-5 text-blue-500" />;
-      case 'check':
+      case "check":
         return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case 'alert':
+      case "alert":
         return <AlertCircle className="w-5 h-5 text-red-500" />;
       default:
         return <BellOff className="w-5 h-5 text-blue-500" />;

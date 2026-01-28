@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { X, Lock, Eye, EyeOff, Check, AlertCircle } from 'lucide-react';
+import React, { useState } from "react";
+import { X, Lock, Eye, EyeOff, Check, AlertCircle } from "lucide-react";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onChangePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
+  onChangePassword: (
+    currentPassword: string,
+    newPassword: string
+  ) => Promise<boolean>;
 }
 
 export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
@@ -13,69 +16,79 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   onChangePassword,
 }) => {
   const [formData, setFormData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
-    confirm: false
+    confirm: false,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   if (!isOpen) return null;
 
   const getPasswordStrength = () => {
     const password = formData.newPassword;
-    if (password.length === 0) return { strength: 0, label: '' };
-    if (password.length < 6) return { strength: 1, label: 'Weak' };
-    if (password.length < 10) return { strength: 2, label: 'Medium' };
-    return { strength: 3, label: 'Strong' };
+    if (password.length === 0) return { strength: 0, label: "" };
+    if (password.length < 6) return { strength: 1, label: "Weak" };
+    if (password.length < 10) return { strength: 2, label: "Medium" };
+    return { strength: 3, label: "Strong" };
   };
 
   const passwordStrength = getPasswordStrength();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (formData.newPassword !== formData.confirmPassword) {
-      setError('New passwords do not match');
+      setError("New passwords do not match");
       return;
     }
 
     if (formData.newPassword.length < 6) {
-      setError('New password must be at least 6 characters');
+      setError("New password must be at least 6 characters");
       return;
     }
 
     setIsLoading(true);
     try {
-      const success = await onChangePassword(formData.currentPassword, formData.newPassword);
+      const success = await onChangePassword(
+        formData.currentPassword,
+        formData.newPassword
+      );
       if (success) {
-        setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+        setFormData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
         onClose();
       } else {
-        setError('Current password is incorrect');
+        setError("Current password is incorrect");
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      setError('Failed to change password');
+      setError("Failed to change password");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const togglePasswordVisibility = (field: 'current' | 'new' | 'confirm') => {
-    setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
+  const togglePasswordVisibility = (field: "current" | "new" | "confirm") => {
+    setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl w-[450px] max-w-[90vw] p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-semibold text-gray-900">Change Password</h3>
+          <h3 className="text-xl font-semibold text-gray-900">
+            Change Password
+          </h3>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-150"
@@ -100,19 +113,28 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
-                type={showPasswords.current ? 'text' : 'password'}
+                type={showPasswords.current ? "text" : "password"}
                 value={formData.currentPassword}
-                onChange={(e) => setFormData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    currentPassword: e.target.value,
+                  }))
+                }
                 placeholder="Enter current password"
                 className="w-full pl-10 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
               <button
                 type="button"
-                onClick={() => togglePasswordVisibility('current')}
+                onClick={() => togglePasswordVisibility("current")}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                {showPasswords.current ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPasswords.current ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
           </div>
@@ -125,19 +147,28 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
-                type={showPasswords.new ? 'text' : 'password'}
+                type={showPasswords.new ? "text" : "password"}
                 value={formData.newPassword}
-                onChange={(e) => setFormData(prev => ({ ...prev, newPassword: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    newPassword: e.target.value,
+                  }))
+                }
                 placeholder="Enter new password"
                 className="w-full pl-10 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
               <button
                 type="button"
-                onClick={() => togglePasswordVisibility('new')}
+                onClick={() => togglePasswordVisibility("new")}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                {showPasswords.new ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPasswords.new ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
             {formData.newPassword && (
@@ -146,17 +177,27 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                   <div className="flex-1 bg-gray-200 rounded-full h-2">
                     <div
                       className={`h-2 rounded-full transition-all duration-300 ${
-                        passwordStrength.strength === 1 ? 'w-1/3 bg-red-500' :
-                        passwordStrength.strength === 2 ? 'w-2/3 bg-yellow-500' :
-                        passwordStrength.strength === 3 ? 'w-full bg-green-500' : 'w-0'
+                        passwordStrength.strength === 1
+                          ? "w-1/3 bg-red-500"
+                          : passwordStrength.strength === 2
+                          ? "w-2/3 bg-yellow-500"
+                          : passwordStrength.strength === 3
+                          ? "w-full bg-green-500"
+                          : "w-0"
                       }`}
                     />
                   </div>
-                  <span className={`text-xs font-medium ${
-                    passwordStrength.strength === 1 ? 'text-red-500' :
-                    passwordStrength.strength === 2 ? 'text-yellow-500' :
-                    passwordStrength.strength === 3 ? 'text-green-500' : ''
-                  }`}>
+                  <span
+                    className={`text-xs font-medium ${
+                      passwordStrength.strength === 1
+                        ? "text-red-500"
+                        : passwordStrength.strength === 2
+                        ? "text-yellow-500"
+                        : passwordStrength.strength === 3
+                        ? "text-green-500"
+                        : ""
+                    }`}
+                  >
                     {passwordStrength.label}
                   </span>
                 </div>
@@ -172,23 +213,33 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
-                type={showPasswords.confirm ? 'text' : 'password'}
+                type={showPasswords.confirm ? "text" : "password"}
                 value={formData.confirmPassword}
-                onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    confirmPassword: e.target.value,
+                  }))
+                }
                 placeholder="Confirm new password"
                 className="w-full pl-10 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
               <button
                 type="button"
-                onClick={() => togglePasswordVisibility('confirm')}
+                onClick={() => togglePasswordVisibility("confirm")}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                {showPasswords.confirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPasswords.confirm ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
-              {formData.confirmPassword && formData.newPassword === formData.confirmPassword && (
-                <Check className="absolute right-10 top-1/2 transform -translate-y-1/2 text-green-500 w-5 h-5" />
-              )}
+              {formData.confirmPassword &&
+                formData.newPassword === formData.confirmPassword && (
+                  <Check className="absolute right-10 top-1/2 transform -translate-y-1/2 text-green-500 w-5 h-5" />
+                )}
             </div>
           </div>
 
@@ -202,10 +253,15 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             </button>
             <button
               type="submit"
-              disabled={isLoading || !formData.currentPassword || !formData.newPassword || !formData.confirmPassword}
+              disabled={
+                isLoading ||
+                !formData.currentPassword ||
+                !formData.newPassword ||
+                !formData.confirmPassword
+              }
               className="flex-1 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
             >
-              {isLoading ? 'Changing...' : 'Change Password'}
+              {isLoading ? "Changing..." : "Change Password"}
             </button>
           </div>
         </form>

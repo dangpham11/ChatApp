@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Phone, PhoneOff, Mic, MicOff, Video, VideoOff, X } from 'lucide-react';
-import { UserAvatar } from './UserAvatar';
-import type { User } from '../types';
+import React, { useState, useEffect } from "react";
+import { Phone, PhoneOff, Mic, MicOff, Video, VideoOff, X } from "lucide-react";
+import { UserAvatar } from "./UserAvatar";
+import type { User } from "../types";
 
-type CallStatus = 'idle' | 'incoming' | 'inCall' | 'missed' | 'ended';
-type CallType = 'voice' | 'video';
+type CallStatus = "idle" | "incoming" | "inCall" | "missed" | "ended";
+type CallType = "voice" | "video";
 
 interface CallScreenProps {
   status: CallStatus;
@@ -27,12 +27,12 @@ export const CallScreen: React.FC<CallScreenProps> = ({
 }) => {
   const [callType, setCallType] = useState<CallType>(initialCallType);
   const [isMicOn, setIsMicOn] = useState(true);
-  const [isCameraOn, setIsCameraOn] = useState(initialCallType === 'video');
+  const [isCameraOn, setIsCameraOn] = useState(initialCallType === "video");
   const [callDuration, setCallDuration] = useState(0);
   const [isRinging, setIsRinging] = useState(false);
 
   useEffect(() => {
-    if (status === 'incoming') {
+    if (status === "incoming") {
       setIsRinging(true);
     } else {
       setIsRinging(false);
@@ -40,9 +40,9 @@ export const CallScreen: React.FC<CallScreenProps> = ({
   }, [status]);
 
   useEffect(() => {
-    if (status === 'inCall') {
+    if (status === "inCall") {
       const timer = setInterval(() => {
-        setCallDuration(prev => prev + 1);
+        setCallDuration((prev) => prev + 1);
       }, 1000);
       return () => clearInterval(timer);
     } else {
@@ -52,30 +52,36 @@ export const CallScreen: React.FC<CallScreenProps> = ({
 
   useEffect(() => {
     setCallType(initialCallType);
-    setIsCameraOn(initialCallType === 'video');
+    setIsCameraOn(initialCallType === "video");
   }, [initialCallType]);
 
   const formatDuration = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const handleSwitchToVideo = () => {
-    setCallType('video');
+    setCallType("video");
     setIsCameraOn(true);
   };
 
-  if (status === 'idle') return null;
+  if (status === "idle") return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
       <div className="w-full max-w-lg mx-4">
-        {status === 'incoming' && (
+        {status === "incoming" && (
           <div className="bg-white rounded-3xl p-8 shadow-2xl">
             <div className="flex flex-col items-center">
-              <div className={`mb-6 ${isRinging ? 'animate-pulse' : ''}`}>
-                <UserAvatar user={caller} size="xl" className="w-32 h-32 ring-4 ring-blue-500 ring-offset-4" />
+              <div className={`mb-6 ${isRinging ? "animate-pulse" : ""}`}>
+                <UserAvatar
+                  user={caller}
+                  size="xl"
+                  className="w-32 h-32 ring-4 ring-blue-500 ring-offset-4"
+                />
               </div>
 
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
@@ -83,11 +89,11 @@ export const CallScreen: React.FC<CallScreenProps> = ({
               </h2>
 
               <div className="flex items-center space-x-2 text-gray-600 mb-8">
-                {callType === 'video' && (
-                  <Video className="w-5 h-5" />
-                )}
+                {callType === "video" && <Video className="w-5 h-5" />}
                 <p className="text-lg">
-                  {callType === 'video' ? 'Cuộc gọi video đến...' : 'Đang gọi cho bạn...'}
+                  {callType === "video"
+                    ? "Cuộc gọi video đến..."
+                    : "Đang gọi cho bạn..."}
                 </p>
               </div>
 
@@ -116,10 +122,10 @@ export const CallScreen: React.FC<CallScreenProps> = ({
           </div>
         )}
 
-        {status === 'inCall' && (
+        {status === "inCall" && (
           <div className="bg-gradient-to-b from-gray-900 to-gray-800 rounded-3xl p-8 shadow-2xl">
             <div className="flex flex-col items-center">
-              {callType === 'video' && (
+              {callType === "video" && (
                 <div className="w-full mb-6 space-y-4">
                   <div className="w-full h-64 bg-gray-700 rounded-2xl overflow-hidden relative">
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -137,7 +143,7 @@ export const CallScreen: React.FC<CallScreenProps> = ({
                 </div>
               )}
 
-              {callType === 'voice' && (
+              {callType === "voice" && (
                 <div className="mb-8">
                   <UserAvatar user={caller} size="xl" className="w-32 h-32" />
                 </div>
@@ -156,10 +162,10 @@ export const CallScreen: React.FC<CallScreenProps> = ({
                   onClick={() => setIsMicOn(!isMicOn)}
                   className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg ${
                     isMicOn
-                      ? 'bg-gray-700 hover:bg-gray-600'
-                      : 'bg-red-500 hover:bg-red-600'
+                      ? "bg-gray-700 hover:bg-gray-600"
+                      : "bg-red-500 hover:bg-red-600"
                   }`}
-                  title={isMicOn ? 'Tắt mic' : 'Bật mic'}
+                  title={isMicOn ? "Tắt mic" : "Bật mic"}
                 >
                   {isMicOn ? (
                     <Mic className="w-6 h-6 text-white" />
@@ -168,15 +174,15 @@ export const CallScreen: React.FC<CallScreenProps> = ({
                   )}
                 </button>
 
-                {callType === 'video' && (
+                {callType === "video" && (
                   <button
                     onClick={() => setIsCameraOn(!isCameraOn)}
                     className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg ${
                       isCameraOn
-                        ? 'bg-gray-700 hover:bg-gray-600'
-                        : 'bg-red-500 hover:bg-red-600'
+                        ? "bg-gray-700 hover:bg-gray-600"
+                        : "bg-red-500 hover:bg-red-600"
                     }`}
-                    title={isCameraOn ? 'Tắt camera' : 'Bật camera'}
+                    title={isCameraOn ? "Tắt camera" : "Bật camera"}
                   >
                     {isCameraOn ? (
                       <Video className="w-6 h-6 text-white" />
@@ -186,7 +192,7 @@ export const CallScreen: React.FC<CallScreenProps> = ({
                   </button>
                 )}
 
-                {callType === 'voice' && (
+                {callType === "voice" && (
                   <button
                     onClick={handleSwitchToVideo}
                     className="w-14 h-14 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg"
@@ -208,11 +214,15 @@ export const CallScreen: React.FC<CallScreenProps> = ({
           </div>
         )}
 
-        {status === 'missed' && (
+        {status === "missed" && (
           <div className="bg-white rounded-3xl p-8 shadow-2xl">
             <div className="flex flex-col items-center">
               <div className="mb-6">
-                <UserAvatar user={caller} size="xl" className="w-32 h-32 opacity-50" />
+                <UserAvatar
+                  user={caller}
+                  size="xl"
+                  className="w-32 h-32 opacity-50"
+                />
               </div>
 
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -233,7 +243,7 @@ export const CallScreen: React.FC<CallScreenProps> = ({
           </div>
         )}
 
-        {status === 'ended' && (
+        {status === "ended" && (
           <div className="bg-white rounded-3xl p-8 shadow-2xl">
             <div className="flex flex-col items-center">
               <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-6">

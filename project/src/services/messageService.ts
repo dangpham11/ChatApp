@@ -1,5 +1,6 @@
-import { axiosInstance } from '../config/api';
-import type { MessageResponse } from './conversationService';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { axiosInstance } from "../config/api";
+import type { MessageResponse } from "./conversationService";
 
 export interface CreateMessageDto {
   conversationId: number;
@@ -40,23 +41,37 @@ export interface PinnedMessageResponse {
 }
 
 export const messageService = {
-  async getMessages(conversationId: number, page = 1, pageSize = 50): Promise<MessageResponse[]> {
+  async getMessages(
+    conversationId: number,
+    page = 1,
+    pageSize = 50
+  ): Promise<MessageResponse[]> {
     try {
-      const { data } = await axiosInstance.get<MessageResponse[]>(`/Messages/conversation/${conversationId}`, {
-        params: { page, pageSize }
-      });
+      const { data } = await axiosInstance.get<MessageResponse[]>(
+        `/Messages/conversation/${conversationId}`,
+        {
+          params: { page, pageSize },
+        }
+      );
       return data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to fetch messages');
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch messages"
+      );
     }
   },
 
   async sendMessage(dto: CreateMessageDto): Promise<MessageResponse> {
     try {
-      const { data } = await axiosInstance.post<MessageResponse>('/Messages/send', dto);
+      const { data } = await axiosInstance.post<MessageResponse>(
+        "/Messages/send",
+        dto
+      );
       return data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to send message');
+      throw new Error(
+        error.response?.data?.message || "Failed to send message"
+      );
     }
   },
 
@@ -64,7 +79,9 @@ export const messageService = {
     try {
       await axiosInstance.put(`/Messages/${messageId}/edit`, dto);
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to edit message');
+      throw new Error(
+        error.response?.data?.message || "Failed to edit message"
+      );
     }
   },
 
@@ -72,7 +89,9 @@ export const messageService = {
     try {
       await axiosInstance.delete(`/Messages/${messageId}/recall`);
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to recall message');
+      throw new Error(
+        error.response?.data?.message || "Failed to recall message"
+      );
     }
   },
 
@@ -80,15 +99,19 @@ export const messageService = {
     try {
       await axiosInstance.post(`/Messages/${messageId}/react`, dto);
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to react to message');
+      throw new Error(
+        error.response?.data?.message || "Failed to react to message"
+      );
     }
   },
 
   async forwardMessage(dto: ForwardDto): Promise<void> {
     try {
-      await axiosInstance.post('/Messages/forward', dto);
+      await axiosInstance.post("/Messages/forward", dto);
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to forward message');
+      throw new Error(
+        error.response?.data?.message || "Failed to forward message"
+      );
     }
   },
 
@@ -96,16 +119,22 @@ export const messageService = {
     try {
       await axiosInstance.post(`/Messages/${messageId}/pin`, dto);
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to pin message');
+      throw new Error(error.response?.data?.message || "Failed to pin message");
     }
   },
 
-  async getPinnedMessages(conversationId: number): Promise<PinnedMessageResponse[]> {
+  async getPinnedMessages(
+    conversationId: number
+  ): Promise<PinnedMessageResponse[]> {
     try {
-      const { data } = await axiosInstance.get<PinnedMessageResponse[]>(`/Messages/conversation/${conversationId}/pinned`);
+      const { data } = await axiosInstance.get<PinnedMessageResponse[]>(
+        `/Messages/conversation/${conversationId}/pinned`
+      );
       return data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to fetch pinned messages');
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch pinned messages"
+      );
     }
   },
 
@@ -113,7 +142,9 @@ export const messageService = {
     try {
       await axiosInstance.post(`/MessageReadReceipts/${messageId}/mark-read`);
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to mark message as read');
+      throw new Error(
+        error.response?.data?.message || "Failed to mark message as read"
+      );
     }
   },
 };

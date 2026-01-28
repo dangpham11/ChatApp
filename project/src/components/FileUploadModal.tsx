@@ -1,10 +1,10 @@
-import React, { useRef } from 'react';
-import { X, Upload, Image, FileText, Camera } from 'lucide-react';
+import React, { useRef } from "react";
+import { X, Image, FileText } from "lucide-react";
 
 interface FileUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onFileSelect: (file: File, type: 'image' | 'file') => void;
+  onFileSelect: (file: File, type: "image" | "file") => void;
 }
 
 export const FileUploadModal: React.FC<FileUploadModalProps> = ({
@@ -17,10 +17,14 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMediaSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      onFileSelect(file, 'image');
+      if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
+        onFileSelect(file, "image");
+      } else {
+        onFileSelect(file, "file");
+      }
       onClose();
     }
   };
@@ -28,7 +32,7 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      onFileSelect(file, 'file');
+      onFileSelect(file, "file");
       onClose();
     }
   };
@@ -72,26 +76,13 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
               <p className="text-sm text-gray-500">Share files and documents</p>
             </div>
           </button>
-
-          <button
-            onClick={() => imageInputRef.current?.click()}
-            className="w-full flex items-center p-4 hover:bg-gray-50 rounded-xl transition-colors duration-150 border border-gray-200"
-          >
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
-              <Camera className="w-6 h-6 text-purple-600" />
-            </div>
-            <div className="text-left">
-              <h4 className="font-medium text-gray-900">Camera</h4>
-              <p className="text-sm text-gray-500">Take a photo or video</p>
-            </div>
-          </button>
         </div>
 
         <input
           ref={imageInputRef}
           type="file"
           accept="image/*,video/*"
-          onChange={handleImageSelect}
+          onChange={handleMediaSelect}
           className="hidden"
         />
         <input

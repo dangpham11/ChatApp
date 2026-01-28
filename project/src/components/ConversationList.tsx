@@ -1,14 +1,27 @@
-import React from 'react';
-import type { Conversation, User } from '../types';
-import { UserAvatar } from './UserAvatar';
-import { MoreHorizontal, Archive, BellOff, Phone, Video, Trash2, AlertTriangle, UserX, CheckCheck, User as UserIcon } from 'lucide-react';
+import React from "react";
+import type { Conversation, User } from "../types";
+import { UserAvatar } from "./UserAvatar";
+import {
+  Archive,
+  BellOff,
+  Phone,
+  Video,
+  Trash2,
+  AlertTriangle,
+  UserX,
+  CheckCheck,
+  User as UserIcon,
+} from "lucide-react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 interface ConversationListProps {
   conversations: Conversation[];
   currentUser: User;
   activeConversationId?: string;
   onSelectConversation: (conversationId: string) => void;
-  activeTab?: 'all' | 'unread';
+  activeTab?: "all" | "unread";
 }
 
 interface ConversationItemProps {
@@ -25,29 +38,33 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   onSelect,
 }) => {
   const [showContextMenu, setShowContextMenu] = React.useState(false);
-  const [contextMenuPosition, setContextMenuPosition] = React.useState({ x: 0, y: 0 });
+  const [contextMenuPosition, setContextMenuPosition] = React.useState({
+    x: 0,
+    y: 0,
+  });
 
-  const formatTime = (date: Date) => {
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const hours = diff / (1000 * 60 * 60);
-    
-    if (hours < 24) {
-      return date.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      });
-    } else {
-      return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric'
-      });
-    }
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+
+  const formatTime = (timestamp?: string | Date) => {
+    if (!timestamp) return "";
+
+    const d = dayjs(timestamp);
+    if (!d.isValid()) return ""; // 🔹 invalid thì trả về ''
+
+    const now = dayjs();
+    const diffHours = now.diff(d, "hour");
+
+    return diffHours < 24 ? d.format("HH:mm") : d.format("MMM D");
   };
 
-  const getOtherParticipant = (): User => {
-    return conversation.participants.find(p => p.id !== currentUser.id) || conversation.participants[0];
+  const isCloud = conversation.participants.length === 1;
+  const getOtherParticipant = (): User | null => {
+    if (isCloud) return null;
+
+    return (
+      conversation.participants.find((p) => p.id !== currentUser.id) || null
+    );
   };
 
   const otherUser = getOtherParticipant();
@@ -59,18 +76,11 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
     setShowContextMenu(true);
   };
 
-  const handleMoreClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const rect = e.currentTarget.getBoundingClientRect();
-    setContextMenuPosition({ x: rect.right - 200, y: rect.bottom });
-    setShowContextMenu(true);
-  };
-
   React.useEffect(() => {
     const handleClickOutside = () => setShowContextMenu(false);
     if (showContextMenu) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
     }
   }, [showContextMenu]);
 
@@ -80,17 +90,19 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
         onClick={onSelect}
         onContextMenu={handleContextMenu}
         className={`p-4 cursor-pointer transition-colors duration-150 hover:bg-gray-50 relative group ${
-          isActive ? 'bg-blue-50 border-r-4 border-blue-500' : ''
+          isActive ? "bg-blue-50 border-r-4 border-blue-500" : ""
         }`}
       >
         <div className="flex items-center space-x-3">
           <UserAvatar user={otherUser} size="md" />
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-center mb-1">
-              <h3 className={`font-medium text-sm truncate ${
-                isActive ? 'text-blue-900' : 'text-gray-900'
-              }`}>
-                {otherUser.name}
+              <h3
+                className={`font-medium text-sm truncate ${
+                  isActive ? "text-blue-900" : "text-gray-900"
+                }`}
+              >
+                {isCloud ? "Cloud của tôi" : otherUser?.name}
               </h3>
               <div className="flex items-center space-x-2">
                 {conversation.lastMessage && (
@@ -98,21 +110,23 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
                     {formatTime(conversation.lastMessage.timestamp)}
                   </span>
                 )}
-                <button
+                {/* <button
                   onClick={handleMoreClick}
                   className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-200 rounded-full transition-all duration-150"
                 >
                   <MoreHorizontal className="w-4 h-4 text-gray-600" />
-                </button>
+                </button> */}
               </div>
             </div>
             <div className="flex justify-between items-center">
               <p className="text-sm text-gray-600 truncate max-w-[200px]">
-                {conversation.lastMessage?.content || 'No messages yet'}
+                {conversation.lastMessage?.content || "No messages yet"}
               </p>
               {conversation.unreadCount > 0 && (
                 <span className="bg-blue-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] flex items-center justify-center">
-                  {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
+                  {conversation.unreadCount > 99
+                    ? "99+"
+                    : conversation.unreadCount}
                 </span>
               )}
             </div>
@@ -141,10 +155,10 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
             <UserIcon className="w-4 h-4 text-gray-600 mr-3" />
             <span className="text-gray-700">Xem trang cá nhân</span>
           </button>
-          
+
           {/* Divider */}
           <div className="border-t border-gray-200 my-2"></div>
-          
+
           <button className="w-full flex items-center px-4 py-3 hover:bg-gray-50 transition-colors duration-150">
             <Phone className="w-4 h-4 text-gray-600 mr-3" />
             <span className="text-gray-700">Gọi thoại</span>
@@ -186,20 +200,24 @@ export const ConversationList: React.FC<ConversationListProps> = ({
       {conversations.length === 0 && (
         <div className="text-center py-8">
           <p className="text-gray-500">
-            {activeTab === 'unread' ? 'Không có tin nhắn chưa đọc' : 'Không có cuộc trò chuyện nào'}
+            {activeTab === "unread"
+              ? "Không có tin nhắn chưa đọc"
+              : "Không có cuộc trò chuyện nào"}
           </p>
         </div>
       )}
       {conversations.map((conversation) => {
         const isActive = conversation.id === activeConversationId;
-        
+
         return (
           <ConversationItem
             key={conversation.id}
             conversation={conversation}
             currentUser={currentUser}
             isActive={isActive}
-            onSelect={() => onSelectConversation(conversation.id)}
+            onSelect={() => {
+              onSelectConversation(conversation.id);
+            }}
           />
         );
       })}

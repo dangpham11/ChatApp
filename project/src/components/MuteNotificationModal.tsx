@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Clock } from 'lucide-react';
+import React, { useState } from "react";
+import { X, Clock } from "lucide-react";
 
 interface MuteNotificationModalProps {
   isOpen: boolean;
@@ -12,14 +12,14 @@ export const MuteNotificationModal: React.FC<MuteNotificationModalProps> = ({
   onClose,
   onMute,
 }) => {
-  const [selectedDuration, setSelectedDuration] = useState<string>('15min');
+  const [selectedDuration, setSelectedDuration] = useState<string>("15min");
 
   const durations = [
-    { id: '15min', label: 'Trong 15 phút' },
-    { id: '1hour', label: 'Trong 1 giờ' },
-    { id: '8hours', label: 'Trong 8 giờ' },
-    { id: '24hours', label: 'Trong 24 giờ' },
-    { id: 'forever', label: 'Đến khi tôi bật lại' },
+    { id: "15min", label: "Trong 15 phút" },
+    { id: "1hour", label: "Trong 1 giờ" },
+    { id: "8hours", label: "Trong 8 giờ" },
+    { id: "24hours", label: "Trong 24 giờ" },
+    { id: "forever", label: "Đến khi tôi bật lại" },
   ];
 
   const handleMute = () => {

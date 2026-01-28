@@ -4,11 +4,19 @@ export interface User {
   email?: string;
   avatar: string;
   isOnline: boolean;
-  lastSeen?: string;
+  lastSeen?: Date;
+  bio?: string;
+  phoneNumber?: string;
+  location?: string;
+  dateBirth?: string;
 }
 
 export interface Message {
   id: string;
+  tempId?: string;
+  isTemp?: boolean;
+  isForwardClone?: boolean;
+  conversationId: string;
   senderId: string;
   content: string;
   timestamp: Date;
@@ -23,13 +31,19 @@ export interface Message {
     content: string;
     senderName: string;
   };
-  type?: 'text' | 'voice' | 'image' | 'file' | 'location';
+  type?: "text" | "voice" | "image" | "file" | "location" | "video";
   voiceDuration?: number;
+  fileUrl?: string;
+  fileName?: string;
+  fileSize?: number;
+  thumbnailUrl?: string;
   location?: {
     latitude: number;
     longitude: number;
     address: string;
   };
+  forwardedFromUserId?: string;
+  forwardedFromTimestamp?: string;
   forwardedFrom?: {
     senderName: string;
     originalTimestamp: Date;
@@ -37,9 +51,11 @@ export interface Message {
 }
 
 export interface MessageReaction {
+  id: string;
   emoji: string;
-  count: number;
-  users: string[];
+  userId: string;
+  username: string;
+  createdAt: string;
 }
 
 export interface Conversation {
